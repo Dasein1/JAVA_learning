@@ -131,3 +131,80 @@ class Solution {
     3.遍历哈希表，找到值为1的键（有比遍历更好的方法吗）
 
 ### 位运算 自动状态机
+
+
+
+
+# 46.把数组翻译成字符串
+![](images/2022-02-28-16-03-15.png)
+## 1.深度优先搜索
+### 思路：
+1）在for循环中递归
+2）满足终止条件时用count计数
+
+
+### 代码：
+```java
+class Solution {
+    int count=0;
+    public int translateNum(int num) {
+        String number = String.valueOf(num);
+        backtracking(0,number);
+        return count;
+    }
+    void backtracking(int k,String number){
+        String subnumber;
+        if (k>=number.length()-1){
+            count+=1;
+            return;
+        }
+        for(int i=k+1;i<=k+2;i++){
+            subnumber=number.substring(k,i);
+            if (Integer.valueOf(subnumber)>=0 && Integer.valueOf(subnumber)<=25){
+                backtracking(i,number);
+            }
+            if (subnumber.equals("0"))  break;
+        }
+    }
+}
+```
+
+
+## 2.动态规划
+### 代码：
+```java
+class Solution {
+    public int translateNum(int num) {
+        String number = String.valueOf(num);
+        if (number.length()==1){
+            return 1;
+        }
+        int[] dp=new int[number.length()+1];
+        int tmp;
+        dp[0]=1;
+        dp[1]=1;
+        for(int i=2;i<=number.length();i++){
+            if (number.substring(i-2,i-1).equals("0")){
+                dp[i]=dp[i-1];
+                continue;
+            }
+            tmp=Integer.valueOf(number.substring(i-2,i));
+            if(tmp>=0 && tmp <=25){
+                dp[i]=dp[i-2]+dp[i-1];
+            }
+            else{
+                dp[i]=dp[i-1];
+            }
+        }
+        return dp[number.length()];
+    }   
+}
+```
+
+### 思路：
+到第i个数字的翻译方法数与到第i-1个和第i-2个的有关，寻找它们之间的联系
+
+## 问题：
+1.解题中对int num的处理：
+转换为String，利用string.substring方法取数，利用string.equals()方法与0和25作比较。
+2.当第i-1个数为0时，无法与第i个数连接翻译。
