@@ -659,6 +659,13 @@ class Solution {
     }
 }
 ```
+### 问题：
+1.怎么创建双端队列？
+```java
+LinkedList<Integer> tmp=new LinkedList<>();
+```
+
+
 
 # 32-I.从上到下打印二叉树
 ![](images/2022-03-02-18-18-37.png)
@@ -713,7 +720,7 @@ class Solution {
 
 
 ## 问题
-1.ArrayList怎么转换为int[]数组？
+1.ArrayList怎么转换为字符串数组？
 ```java
 ArrayList lst = new ArrayList ();
 lst.add ("aa");
@@ -724,4 +731,307 @@ obj = lst.toArray();
 //方法2:
 String []str = new String [lst.size()];
 lst.toArray(str);
+```
+
+2.ArrayList怎么转换为int[]数组？
+```Java
+ArrayList lst=new ArrayList();
+lst.add(1);
+lst.add(2);
+lst.add(3);
+int[] arr=new int[lst.size()];
+for(int i=0;i<lst.size();i++){
+    arr[i]=lst.get(i);
+}
+```
+
+
+
+# 39.数组中出现次数超过一半的数字
+![](images/2022-03-03-11-22-10.png)
+
+## 字典存储+遍历查找
+### 代码：
+```java
+class Solution {
+    public int majorityElement(int[] nums) {
+        HashMap<Integer,Integer> Sites=new HashMap<>();
+        for(Integer x:nums){
+            Sites.putIfAbsent(x,0);
+            Sites.put(x,Sites.get(x)+1);
+        }
+        for(Integer y:Sites.keySet()){
+            if(Sites.get(y)>(nums.length/2)){
+                return y.intValue();
+            }
+        }
+        return 0;
+    }
+}
+```
+
+### 问题：
+官方解答中的优化
+
+
+
+
+# 40.最小的k个数
+![](images/2022-03-03-11-43-02.png)
+
+## 排序
+### 代码：
+```java
+class Solution {
+    public int[] getLeastNumbers(int[] arr, int k) {
+        Arrays.sort(arr);
+        int[] res=new int[k];
+        for(int i=0;i<k;i++){
+            res[i]=arr[i];
+        }
+        return res;
+    }
+}
+```
+
+### 问题：
+1.是否可以截取数组中某一段？
+
+## ==快排的变形==
+
+
+
+# 52.两个链表的第一个公共节点
+## 哈希表
+### 代码：
+```java
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        Set<ListNode> visited = new HashSet<ListNode>();
+        ListNode temp = headA;
+        while (temp != null) {
+            visited.add(temp);
+            temp = temp.next;
+        }
+        temp = headB;
+        while (temp != null) {
+            if (visited.contains(temp)) {
+                return temp;
+            }
+            temp = temp.next;
+        }
+        return null;
+    }
+}
+```
+
+# 48.最长不含重复字符的子字符串
+![](images/2022-03-03-13-11-50.png)
+## 动态规划+线性遍历
+### 代码：
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if (s.length()<=1){
+            return s.length();
+        }
+        int res=1;
+        char[] sarray=s.toCharArray();
+        int[] dp=new int[sarray.length];
+        dp[0]=1;
+        for(int i=1;i<s.length();i++){
+            dp[i]=dp[i-1]+1;
+            for(int j=i-1;j>=i-dp[i-1];j--){
+                if(sarray[j]==sarray[i]){
+                    dp[i]= i-j;
+                    break;
+                }
+
+            }
+            res=Math.max(res,dp[i]);
+        }
+        return res;
+    }
+}
+```
+
+
+### 思路：
+1.dp[i]表示以s[i]结尾的最长子字符串长度，该长度dp[i-1]决定
+
+### 优化：
+1.用string.charAt()进行判断，这样就可以不用数组
+
+
+# 33.二叉搜索树的后序遍历序列
+## 递归分治
+### 思路：
+1.利用二叉搜索树性质：若它的左子树不空，则左子树上所有结点的值均小于它的根节点的值；若它的右子树不空，则右子树上所有结点的值均大于它的根节点的值。
+2.后序遍历的性质：数组中的最后一个数是根节点的值
+3.递归分治： 
+    判断根节点所在的树：
+        循环终止条件
+        划分区域
+        判断根节点的左子树
+        判断根节点的右子树
+        返回判断结果
+
+### 代码：
+```java
+class Solution {
+    public boolean verifyPostorder(int[] postorder) {
+        return verify(postorder,0,postorder.length-1);
+    }
+    boolean verify(int[] arr,int start,int end){
+        if (end-start<=0){
+            return true;
+        }
+        int i=end;
+        int j=i-1;
+        while(j>=start && arr[j]>=arr[i]){
+            j--;
+        }
+        int rightStart=j+1;
+        for(;j>=start;j--){
+            if(arr[j]>arr[i]){
+                return false;
+            }
+        }
+        int leftStart=start;
+        int leftEnd=rightStart-1;
+        int rightEnd=end-1;
+        return verify(arr,leftStart,leftEnd) && verify(arr,rightStart,rightEnd);
+}
+}
+```
+
+# 53-I. 在排序数组中查找数字
+![](images/2022-03-04-13-18-00.png)
+## 代码：
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        if (nums.length==0){
+            return 0;
+        }
+        int i=0;
+        int count=0;
+        while(i<nums.length && nums[i]<=target){
+            if (nums[i]==target){
+                count++;
+            }
+            i++;
+        }
+        return count;
+    }
+}
+```
+
+### 思路：
+遍历数组直到nums[i]大于target为止或者越界为止
+
+
+# 54.二叉搜索树的第k大节点
+![](images/2022-03-04-14-21-45.png)
+### 代码
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    int count=0;
+    int res=0;
+    public int kthLargest(TreeNode root, int k) {
+        traversal(root,k);
+        return res;
+    }
+    void traversal(TreeNode node,int k){
+        if (node==null){
+            return;
+        }
+        traversal(node.right,k);
+        count+=1;
+        if (count==k){
+            res=node.val;
+            return;
+        }
+        traversal(node.left,k);
+    }
+}
+```
+
+
+# 43.1~n整数中1出现的次数
+![](images/2022-03-04-15-00-39.png)
+
+
+
+
+# ==38.字符串的排列(全排列问题)==
+## 思路：
+1.对字符串数组排序
+
+## 问题：
+1.字符数组如何? 
+用Arrays.sort()方法
+
+2.path的存储？
+
+
+3.为什么需要排序？
+
+
+4.如何填充数组？
+Arrays.fill()
+
+## 代码：
+```java
+class Solution {
+    LinkedList<Character> path=new LinkedList<>();
+    ArrayList<String> res=new ArrayList<>();
+    String tmp=null;
+    public String[] permutation(String s) {
+        char[] sArray=s.toCharArray();
+        Arrays.sort(sArray);
+        int length=s.length();
+        boolean[] used=new boolean[length];
+        Arrays.fill(used,false);
+        permutation(sArray,used,length);
+        String[] result=new String[res.size()];
+        for(int i=0;i<res.size();i++){
+            result[i]=res.get(i);
+        }
+        return result;
+    }
+    void permutation(char[] array,boolean[] used,int length){
+        if(path.size()==length){
+            char[] patharray=new char[length];
+            for(int i=0;i<length;i++){
+                patharray[i]=path.get(i);
+            }
+            tmp=String.valueOf(patharray);
+            res.add(tmp);
+            return;
+        }
+        for(int j=0;j<length;j++){
+            if(used[j]==true){
+                continue;
+            }
+            if(j>=1 && array[j]==array[j-1] && used[j-1]==false){
+                continue;
+            }
+            path.addLast(array[j]);
+            used[j]=true;
+            permutation(array,used,length);
+            path.removeLast();
+            used[j]=false;
+        }
+    }
+}
 ```
