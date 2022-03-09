@@ -1035,3 +1035,111 @@ class Solution {
     }
 }
 ```
+
+
+
+
+# 34.二叉树中和为某一值的路径
+![](images/2022-03-07-16-28-21.png)
+## 前序遍历
+### 思路：
+1.终止条件：根节点为null,则返回
+2.先判断然后依次递归左节点和右节点
+
+### 代码：
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    List<List<Integer>> result=new ArrayList<>(); 
+    List<Integer> path=new ArrayList<>();
+    int sum=0;
+    public List<List<Integer>> pathSum(TreeNode root, int target) {
+        backtrack(root,target);
+        return result;
+    }
+    void backtrack(TreeNode node,int target){
+        if(node==null){
+            return;
+        }
+        sum+=node.val;
+        path.add(node.val);
+        if (sum==target && node.left==null && node.right==null){
+            result.add(new LinkedList(path));
+        }
+        backtrack(node.left,target);
+        backtrack(node.right,target);
+        path.remove(path.size()-1);
+        sum-=node.val;
+    }
+}
+```
+
+
+# ==35.复杂链表的复制==
+## 哈希表
+### 思路：
+1.{旧节点：新节点}
+2.以旧节点作为索引来建立新链表，相当于对关系旧节点之间的关系作了映射
+
+### 代码：
+```java
+/*
+// Definition for a Node.
+class Node {
+    int val;
+    Node next;
+    Node random;
+
+    public Node(int val) {
+        this.val = val;
+        this.next = null;
+        this.random = null;
+    }
+}
+*/
+class Solution {
+    public Node copyRandomList(Node head) {
+        if (head==null){
+            return null;
+        }
+        Node cur;
+        cur=head;
+        HashMap<Node,Node> dict=new HashMap<>();
+        while(cur!=null){
+            dict.put(cur,new Node(cur.val));
+            cur=cur.next;
+        }
+        cur=head;
+        while(cur!=null){
+            dict.get(cur).next=dict.get(cur.next);
+            dict.get(cur).random=dict.get(cur.random);
+            cur=cur.next;
+        }
+        return dict.get(head);
+    }
+}
+```
+
+
+## ==拆分链表==
+### 思路:
+逐个复制节点,复制节点作为原节点的下一个节点,如1->2->3->4->5变为1->1->2->2->3->3->4->4
+随机节点的赋值:原节点的下一个随机节点的下一个节点为赋值节点的下一个随机节点
+
+
+如何拆分链表?
+复制节点的下一个节点为原节点的下一个节点的下一个节点
