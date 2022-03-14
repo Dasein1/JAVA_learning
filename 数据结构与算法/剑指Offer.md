@@ -1144,3 +1144,31 @@ class Solution {
 如何拆分链表?
 复制节点的下一个节点为原节点的下一个节点的下一个节点
 
+
+
+
+# 53-II. 0~n-1中缺失的数字
+![](images/2022-03-10-15-38-02.png)
+## for循环遍历
+### 思路：
+1.数组的长度为n，那么应有n+1个数字，少的数字就是我们要找到的。
+2.遍历数组，如果nums[i]不等于i，那么说明少的数字是i。
+3.==注意少的数字是n的情况==，也就是说整个数字都满足nums[i]等于i，那么缺少的数字就是最后一个数字n（0~n）。
+
+### 代码：
+```java
+class Solution {
+    public int missingNumber(int[] nums) {
+        int i=0;
+        for(;i<nums.length;i++){
+            if (nums[i]!=i){
+                return i;
+            }
+        }
+        return i;
+    }
+}
+```
+
+## 二分法
+### 思路：
