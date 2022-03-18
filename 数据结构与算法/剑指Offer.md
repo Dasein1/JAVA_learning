@@ -1172,3 +1172,35 @@ class Solution {
 
 ## 二分法
 ### 思路：
+
+
+
+
+
+# 64.求1+2+...+n
+![](images/2022-03-18-20-33-13.png)
+## 分治策略
+### 思路：
+
+### 代码：
+```java
+class Solution {
+    public int sumNums(int n) {
+        if(n%2==0){
+            return recursion(1,n);
+        }
+        else{
+            return recursion(1,n+1)-(n+1);
+        }
+    }
+    int recursion(int start,int end){
+        if(start==end){
+            return start;
+        }
+        int rightStart=(end-start+1)/2+start;
+        int leftEnd=rightStart-1;
+        return recursion(start,leftEnd)+recursion(rightStart,end);
+    }
+}
+```
+
