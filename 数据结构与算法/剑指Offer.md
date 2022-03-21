@@ -1344,4 +1344,88 @@ class Solution {
 ## 单调的双端队列
 ### 思路：
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+# 65.不用加减乘除做加法
+![](images/2022-03-21-13-34-12.png)
+## 位运算
+### 思路：
+两数之和可等价于非进位和与进位和之和（另一组两数之和），不断消耗进位
+
+### 代码：
+```java
+class Solution {
+    public int add(int a, int b) {
+        int c;
+        while(b!=0){
+            c=(a&b)<<1;
+            a=a^b;
+            b=c;
+        }
+        return a;
+    }
+}
+```
+
+
+# 62.圆圈中最后剩下的数字（约瑟夫环）
+![](images/2022-03-21-16-52-49.png)
+## 思路
+设(n,m)问题的解为f(n)，(n-1,m)的解为f(n-1)
+如何表示(n,m)问题中删除第m个数字后开始的第一个数字t？
+第m个数字为m%n-1
+t=m%n
+设删除第m个数字的序列为(t,t+1,...,t-3,t-2)
+构建与(n-1)序列的映射关系(0,1,2,...,n-2)
+(t+x)%n
+
+f(1)=0
+
+
+## 代码
+```java
+class Solution {
+    public int lastRemaining(int n, int m) {
+        int dp=0;
+        for(int i=2;i<=n;i++){
+            dp=(m%i+dp)%i;
+        }
+        return dp;
+    }
+}
+```
+
+
+
+# 66.构建乘积数组
+![](images/2022-03-21-21-29-04.png)
+## 构建左乘积数组+右乘积数组
+### 思路：
+用数组dpl存储左边0~n-1个数乘积结果
+用数组dpr存储右边0~n-1个数乘积结果
+
+
+### 代码：
+```java
+class Solution {
+    public int[] constructArr(int[] a) {
+        int n=a.length;
+        if(n==0){
+            return new int[]{};
+        }
+        int[] dpl=new int[n];
+        dpl[0]=1;
+        int[] dpr=new int[n];
+        dpr[0]=1;
+        int[] res=new int[n];
+        for(int i=1;i<n;i++){
+            dpl[i]=dpl[i-1]*a[i-1];
+        }
+        for(int i=1;i<n;i++){
+            dpr[i]=dpr[i-1]*a[n-i];
+        }
+        for(int i=0;i<n;i++){
+            res[i]=dpl[i]*dpr[n-i-1];
+        }
+        return res;
+    }
+}
+```
