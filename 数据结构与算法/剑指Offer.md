@@ -1429,3 +1429,77 @@ class Solution {
     }
 }
 ```
+
+
+# 中位数
+## 思路：
+1.中位数左边的数小于边界右边的数
+2.如果不小于，则一定在选定边界的右边
+3.对于nums1和nums2边界左右的情况进行判断
+
+## 代码：
+```java
+
+
+```
+
+
+
+
+ # 68-I. 二叉搜索树的最近公共祖先
+ 
+ ## 思路：
+ 当最近公共祖先不是p或q时，最近公共祖先的值介于p和q之间
+ 从根节点开始向下寻找，如果该节点比p和q都大，那么去判断根节点的左节点
+ ，如果该节点比p和q都小，那么去判断根节点的右节点。
+
+## 代码：
+```java
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode node=root;
+        while(node!=null){
+            if(node.val>p.val && node.val>q.val){
+                node=node.left;
+            }
+            else if(node.val<p.val && node.val<q.val){
+                node=node.right;
+            }
+            else{
+                return node;
+            }
+        }
+        return node;
+    }
+}
+```
+
+
+
+# 68-II. 二叉树的最近公共祖先
+![](images/2022-03-23-10-21-00.png)
+## 思路：
+先序遍历递归找以当前节点为根的树中的p或q的引用
+
+## 代码：
+```java
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root==null || root==p || root==q){
+            return root;
+        }
+        TreeNode left=lowestCommonAncestor(root.left,p,q);
+        TreeNode right=lowestCommonAncestor(root.right,p,q);
+        if(left==null){
+            return right;
+        }
+        else if(right==null){
+            return left;
+        }
+        else{
+            return root;
+        }
+    }
+}
+```
+ 
