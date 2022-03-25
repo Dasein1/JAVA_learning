@@ -18,14 +18,14 @@ with open(demand, encoding='utf-8') as f:
     customer_name = data[0, 1:]
     data_demand = np.array(data[1:, 1:])
     data_demand = data_demand.astype(np.float64)
-
+demand_total=sum(sum(data_demand))
 #   100*10   边缘节点*客户
 with open(qos, encoding='utf-8') as f:
     data = np.loadtxt(f, str, delimiter=",", skiprows=1)
     node_name = data[:, 0]
     data_qos = np.array(data[:, 1:])
     data_qos = np.array(data_qos < qos_constraint, np.float64)
-    transpose_data_qos=np.transpose(data_qos)
+    # transpose_data_qos=np.transpose(data_qos)
     # print(data_qos)
 
 #    100*1   边缘节点
@@ -43,7 +43,7 @@ node_total = data_demand.shape[0]
 th = int(time_total * 0.05)
 
 #  100*100 时间*边缘节点
-time_node = np.dot(data_demand, np.transpose(data_qos))
+time_node = np.dot(data_demand,np.transpose(data_qos))
 
 
 # print(time_node)
@@ -67,12 +67,12 @@ time_node_custom = np.zeros((time_total, node_total, customer_total), np.float64
 ##step 1 :最值分配
 
 while (np.min(nums_used) < th):
-    MAX_node = np.max(time_node)
-    MAX_node_index = np.where(time_node == MAX_node)
-    MAX_node_list = list(zip(MAX_node_index[0], MAX_node_index[1]))
-    max_index = MAX_node_list[get_maxnode(nums_used, MAX_node_index)]
-    # print(max_index)
-    cost += time_node[max_index[0], max_index[1]]
+    # MAX_node = np.max(time_node)
+    # MAX_node_index = np.where(time_node == MAX_node)
+    # MAX_node_list = list(zip(MAX_node_index[0], MAX_node_index[1]))
+    # max_index = MAX_node_list[get_maxnode(nums_used, MAX_node_index)]
+    max_index=np.unravel_index(np.argmax(time_node),time_node.shape)
+    cost += time_node[max_index]
     # for i in range(data_demand.shape[1]):
     #     if(data_qos[max_index[1],i]==1):
     #         time_node_custom[max_index[0],max_index[1],i]=data_demand[max_index[0],i]
@@ -83,14 +83,14 @@ while (np.min(nums_used) < th):
     data_demand[max_index[0], data_qos[max_index[1], :] == 1] = 0
     time_node = np.dot(data_demand, np.transpose(data_qos))
     time_node[:, nums_used >= th] = 0
-    if ~(np.any(data_demand)):
+    if ~(np.any(data_demand)) or np.max(time_node)==0:
         break
-
-consum_time_node_before=np.sum(time_node_custom,axis=2)
-sorted_consum_before=np.sort(consum_time_node_before,axis=0)
-print("before的demand")
-print(np.max(data_demand))
 time_node = np.dot(data_demand, np.transpose(data_qos))
+print("before")
+print(demand_total-sum(sum(data_demand)))
+print(sum(sum(sum(time_node_custom))))
+
+
 # #平均分配
 # nood_max = np.zeros(node_total,np.uint32)
 # #每个用户连接的节点数、每个节点连接的用户数
@@ -116,7 +116,7 @@ time_node = np.dot(data_demand, np.transpose(data_qos))
 
 
 # while(np.max(time_node)==0 or np.min(nums_used)>=time_total):
-threhold = 1200
+threhold = 640
 
 for i in range(time_total):
 
@@ -127,9 +127,9 @@ for i in range(time_total):
         # 找到所连接用户的需求总和最大的节点，排序
         demand_unsorted = time_node[i, :]
         arr = []
-        for _ in range(node_total):
-            if demand_unsorted[_] != 0:
-                arr.append((_, demand_unsorted[_]))
+        for z in range(node_total):
+            if demand_unsorted[z] != 0:
+                arr.append((z, demand_unsorted[z]))
         arr.sort(key=lambda x: x[1], reverse=True)
 
         # 选取节点
@@ -147,9 +147,7 @@ for i in range(time_total):
                 provide = arr[cur][1]
             demand_node_customer = data_demand[i] * data_qos[arr[cur][0], :]
             sum_demand = np.sum(demand_node_customer)
-            demand_provide = demand_node_customer / sum_demand * provide
-            print("demand_provide")
-            print(demand_provide)
+            demand_provide = (demand_node_customer / sum_demand * provide).astype(np.uint64)
             data_demand[i] -= demand_provide
             time_node = np.dot(data_demand, np.transpose(data_qos))
             time_node_custom[i, arr[cur][0], :] += demand_provide
@@ -172,46 +170,42 @@ for i in range(time_total):
         if arr[0][1]==0:
             break
         else:
-            demand_node_customer = data_demand[i] * data_qos[arr[0][0], :]
+            demand_node_customer = data_demand[   i] * data_qos[arr[0][0], :]
             data_demand[i] -= demand_node_customer
             time_node = np.dot(data_demand, np.transpose(data_qos))
             time_node_custom[i, arr[0][0], :] += demand_node_customer
 
 # 判断用户需求的最小值是否为0
-print(np.min(data_demand))
+print(np.max(data_demand))
 
 # 计算边缘节点带宽成本
 ## 取边缘节点在时间维度上带宽成本降序的第th+1个作为95分位带宽
 consum_time_node=np.sum(time_node_custom,axis=2)
 sorted_consum=np.sort(consum_time_node,axis=0,)
 total_cost=np.sum(sorted_consum[-th-1,:])
-print("total_cost")
 print(total_cost)
-
-np.set_printoptions(suppress=True)
-print(consum_time_node)
-
-chazhi=consum_time_node-consum_time_node_before
-print(np.min(chazhi))
-print("afterdemand:")
-print(np.max(data_demand))
 # print(customer_name)
 # print(len(node_name))
-print(np.max(time_node))
 
-with open('F:/huawei/text.txt', 'w', encoding='utf-8') as f:
+
+with open('E:/2022华为软件精英挑战赛/SDK/SDK_python/CodeCraft-2022/src/text.txt', 'w', encoding='utf-8') as f:
     for i in range(time_total):
-        for j in range(node_total):
+        for k in range(customer_total):
             text = ''
-            text += node_name[j] + ":"
-            for k in range(customer_total):
+            text += node_name[k] + ":"
+            have=0
+            demand_need=np.sum(time_node_custom[i,:,k])
+            for j in range(node_total):
                 if (time_node_custom[i, j, k] != 0):
                     text += "<" + customer_name[k] + "," + str(time_node_custom[i, j, k]) + ">" + ","
+                have+=demand_need
+                if (have==demand_need):
+                    break
             if (text[-1] == ','):
                 text = text[:-1]
             text += "\n"
             f.write(text)
 
 end = time.time()
-# print(end-start)
+print(end-start)
 # print(time_total,customer_total,node_total)
