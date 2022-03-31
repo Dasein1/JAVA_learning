@@ -1182,6 +1182,12 @@ class Solution {
 ## 分治策略
 ### 思路：
 
+
+# 60.n个骰子的点数
+## 动态规划：
+### 思路：
+第n个骰子的点数=前n-1个骰子的点数+第n个骰子的点数
+
 ### 代码：
 ```java
 class Solution {
@@ -1200,6 +1206,212 @@ class Solution {
         int rightStart=(end-start+1)/2+start;
         int leftEnd=rightStart-1;
         return recursion(start,leftEnd)+recursion(rightStart,end);
+    public double[] dicesProbability(int n) {
+        double[][] arrs=new double[n][];
+        for(int i=0;i<n;i++){
+            arrs[i]=new double[(i+1)*6];
+        }
+        for (int j=0;j<arrs[0].length;j++){
+            arrs[0][j]=1d/6;
+        }
+        for(int i=1;i<n;i++){
+            for(int j=0;j<arrs[i-1].length;j++){
+                for(int k=0;k<arrs[0].length;k++){
+                    arrs[i][j+k+1]=arrs[i][j+k+1]+arrs[i-1][j]*arrs[0][k];
+                }
+            }
+        }
+        ArrayList<Double> res=new ArrayList<>();
+        for(double x:arrs[n-1]){
+            if (x!=0){
+                res.add(x);
+            }
+        }
+        double[] result=new double[res.size()];
+        for(int i=0;i<result.length;i++){
+            result[i]=res.get(i);
+        }
+        return result;
+    }
+}
+```
+
+# 57.和为s的两个数字
+![](images/2022-03-15-15-42-21.png)
+## 对撞双指针
+### 思路：
+利用数组是递增的性质，双指针分别指向两端，nums[i]+nums[j]和target作比较，如果小于则i++，如果大于则j--。
+
+### 代码：
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        int i = 0, j = nums.length - 1;
+        while(i < j) {
+            int s = nums[i] + nums[j];
+            if(s < target) i++;
+            else if(s > target) j--;
+            else return new int[] { nums[i], nums[j] };
+        }
+        return new int[0];
+    }
+}
+```
+
+
+# 36.二叉搜索树与双向链表
+![](images/2022-03-15-15-49-23.png)
+## 后序遍历
+### 思路：
+
+### 代码：
+```java
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
+    public Node(int _val) {
+        val = _val;
+    }
+
+    public Node(int _val,Node _left,Node _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+    public Node treeToDoublyList(Node root) {
+        if(root==null){
+            return null;
+        }
+        Node[] minmax=search(root);
+        minmax[0].left=minmax[1];
+        minmax[1].right=minmax[0];
+        return minmax[0];
+    }
+    Node[] search(Node node){
+        if  (node==null){
+            return new Node[]{null,null};
+        }
+        Node[] Left=search(node.left);
+        Node maxLeft=Left[1];
+        Node minLeft=Left[0];
+        Node[] right=search(node.right);
+        Node minRight=right[0];
+        Node maxRight=right[1];
+        if(maxLeft!=null){
+            node.left=maxLeft;
+            maxLeft.right=node;
+        }
+        else{
+            minLeft=node;
+        }
+        if(minRight!=null){
+            node.right=minRight;
+            minRight.left=node;
+        }
+        else{
+            maxRight=node;
+        }
+        return new Node[]{minLeft,maxRight};
+
+        
+    }
+}
+```
+
+
+# 58 -I.翻转单词顺序
+![](images/2022-03-16-22-19-54.png)
+## 双指针+从后往前遍历+StringBuilder
+### 思路：
+i指向单词首字符，j指向单词尾字符
+    搜索空格 i
+    添加单词
+    搜索非空格 j
+
+### 代码：
+```java
+class Solution {
+    public String reverseWords(String s) {
+        StringBuilder res=new StringBuilder();
+        s=s.trim();
+        int j=s.length()-1;
+        int i=j;
+        while(i>=0){
+            i=j;
+            while(i>=0 && s.charAt(i)!=' '){
+                i--;
+            }
+            res.append(s.substring(i+1,j+1)+" ");
+            j=i;
+            while(j>=0 && s.charAt(j)==' '){
+                j--;
+            }
+        }
+        return res.toString().trim();
+    }
+}
+```
+
+
+# 59-II. 队列的最大值
+![](images/2022-03-17-15-27-57.png)
+## 单调的双端队列
+### 思路：
+
+# 65.不用加减乘除做加法
+![](images/2022-03-21-13-34-12.png)
+## 位运算
+### 思路：
+两数之和可等价于非进位和与进位和之和（另一组两数之和），不断消耗进位
+
+### 代码：
+```java
+class Solution {
+    public int add(int a, int b) {
+        int c;
+        while(b!=0){
+            c=(a&b)<<1;
+            a=a^b;
+            b=c;
+        }
+        return a;
+    }
+}
+```
+
+
+# 62.圆圈中最后剩下的数字（约瑟夫环）
+![](images/2022-03-21-16-52-49.png)
+## 思路
+设(n,m)问题的解为f(n)，(n-1,m)的解为f(n-1)
+如何表示(n,m)问题中删除第m个数字后开始的第一个数字t？
+第m个数字为m%n-1
+t=m%n
+设删除第m个数字的序列为(t,t+1,...,t-3,t-2)
+构建与(n-1)序列的映射关系(0,1,2,...,n-2)
+(t+x)%n
+
+f(1)=0
+
+
+## 代码
+```java
+class Solution {
+    public int lastRemaining(int n, int m) {
+        int dp=0;
+        for(int i=2;i<=n;i++){
+            dp=(m%i+dp)%i;
+        }
+        return dp;
     }
 }
 ```
@@ -1285,6 +1497,66 @@ class MedianFinder {
 
 
 
+
+
+# 66.构建乘积数组
+![](images/2022-03-21-21-29-04.png)
+## 构建左乘积数组+右乘积数组
+### 思路：
+用数组dpl存储左边0~n-1个数乘积结果
+用数组dpr存储右边0~n-1个数乘积结果
+
+
+### 代码：
+```java
+class Solution {
+    public int[] constructArr(int[] a) {
+        int n=a.length;
+        if(n==0){
+            return new int[]{};
+        }
+        int[] dpl=new int[n];
+        dpl[0]=1;
+        int[] dpr=new int[n];
+        dpr[0]=1;
+        int[] res=new int[n];
+        for(int i=1;i<n;i++){
+            dpl[i]=dpl[i-1]*a[i-1];
+        }
+        for(int i=1;i<n;i++){
+            dpr[i]=dpr[i-1]*a[n-i];
+        }
+        for(int i=0;i<n;i++){
+            res[i]=dpl[i]*dpr[n-i-1];
+        }
+        return res;
+    }
+}
+```
+
+
+# 中位数
+## 思路：
+1.中位数左边的数小于边界右边的数
+2.如果不小于，则一定在选定边界的右边
+3.对于nums1和nums2边界左右的情况进行判断
+
+## 代码：
+```java
+
+
+```
+
+
+
+
+ # 68-I. 二叉搜索树的最近公共祖先
+ 
+ ## 思路：
+ 当最近公共祖先不是p或q时，最近公共祖先的值介于p和q之间
+ 从根节点开始向下寻找，如果该节点比p和q都大，那么去判断根节点的左节点
+ ，如果该节点比p和q都小，那么去判断根节点的右节点。
+
 ## 代码：
 ```java
 class Solution {
@@ -1331,3 +1603,48 @@ class Solution {
     }
 }
 ```
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode node=root;
+        while(node!=null){
+            if(node.val>p.val && node.val>q.val){
+                node=node.left;
+            }
+            else if(node.val<p.val && node.val<q.val){
+                node=node.right;
+            }
+            else{
+                return node;
+            }
+        }
+        return node;
+    }
+}
+```
+
+# 68-II. 二叉树的最近公共祖先
+![](images/2022-03-23-10-21-00.png)
+## 思路：
+先序遍历递归找以当前节点为根的树中的p或q的引用
+
+## 代码：
+```java
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root==null || root==p || root==q){
+            return root;
+        }
+        TreeNode left=lowestCommonAncestor(root.left,p,q);
+        TreeNode right=lowestCommonAncestor(root.right,p,q);
+        if(left==null){
+            return right;
+        }
+        else if(right==null){
+            return left;
+        }
+        else{
+            return root;
+        }
+    }
+}
+```
+ 
