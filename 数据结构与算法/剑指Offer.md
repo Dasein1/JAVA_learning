@@ -1175,6 +1175,14 @@ class Solution {
 
 
 
+
+
+# 64.求1+2+...+n
+![](images/2022-03-18-20-33-13.png)
+## 分治策略
+### 思路：
+
+
 # 60.n个骰子的点数
 ## 动态规划：
 ### 思路：
@@ -1183,6 +1191,21 @@ class Solution {
 ### 代码：
 ```java
 class Solution {
+    public int sumNums(int n) {
+        if(n%2==0){
+            return recursion(1,n);
+        }
+        else{
+            return recursion(1,n+1)-(n+1);
+        }
+    }
+    int recursion(int start,int end){
+        if(start==end){
+            return start;
+        }
+        int rightStart=(end-start+1)/2+start;
+        int leftEnd=rightStart-1;
+        return recursion(start,leftEnd)+recursion(rightStart,end);
     public double[] dicesProbability(int n) {
         double[][] arrs=new double[n][];
         for(int i=0;i<n;i++){
@@ -1395,6 +1418,87 @@ class Solution {
 
 
 
+# 41.数据流中的中位数
+## 思路：
+二分查找插入排序数组，查找中位数
+
+## 代码：
+```java
+class MedianFinder {
+    LinkedList<Integer> nums=new LinkedList<>(); 
+    /** initialize your data structure here. */
+    public MedianFinder() {
+
+    }
+    
+    public void addNum(int num) {
+        int index=search(nums,num);
+        nums.add(index,num);
+        return;
+    }
+    
+    public double findMedian() {
+        int n=nums.size();
+        if (n%2==0){
+            return (double)(nums.get(n/2-1)+nums.get(n/2))/2;
+        }
+        else{
+            return nums.get(n/2);
+        }
+        
+    }
+    
+    public int search(LinkedList<Integer> nums,int target){
+        int low=0;
+        int high=nums.size();
+        int i;
+        while(low!=high){
+            i=(low+high)/2 ;
+            if(nums.get(i)<target){
+                low+=1;
+            }
+            else if(nums.get(i)==target){
+                return i;
+            }
+            else if(nums.get(i)>target){
+                high-=1;
+            }
+        }
+        return low;
+    }
+}
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+```
+
+## 优先队列
+### 思路：
+最小堆，最大堆
+
+
+### 代码：
+
+
+
+# 67.把字符串转换成整数
+![](images/2022-03-30-18-37-59.png)
+## 思路：
+有四种字符需要考虑：
+1.开头无用的空格字符：舍弃
+2.符号字符：第一个非空格字符（正号、负号、无符号）
+3.数字字符：res=res*10+x
+            x=ascii(c)-ascii(0)
+4.有效整数部分的多余字符
+
+
+
+
+
 # 66.构建乘积数组
 ![](images/2022-03-21-21-29-04.png)
 ## 构建左乘积数组+右乘积数组
@@ -1456,6 +1560,49 @@ class Solution {
 ## 代码：
 ```java
 class Solution {
+    public int strToInt(String str) {
+        str=str.trim();
+        if(str.length()==0){
+            return 0;
+        }
+        int sign=1;
+        int res=0;
+        int x=0;
+        int i=0;
+        int bnd=Integer.MAX_VALUE/10;
+        char cur=' ';
+        
+        cur=str.charAt(i);
+        if(cur=='+'){
+            i++;
+        }
+        else if(cur=='-'){
+            sign=-1;
+            i++;
+        }
+        else if(cur<'0' || cur>'9'){
+            return 0;
+        }
+        while(i<str.length()){
+            cur=str.charAt(i);
+            if(cur<'0' || cur>'9'){
+                break;
+            }
+            else{
+                if(res>bnd || (res==bnd && cur>'7')){
+                    return sign==1? Integer.MAX_VALUE:Integer.MIN_VALUE;
+                }
+                else{
+                    x=cur-'0';
+                    res=res*10+x;
+                }
+            }
+            i++;
+        }
+        return sign*res;
+    }
+}
+```
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         TreeNode node=root;
         while(node!=null){
@@ -1473,8 +1620,6 @@ class Solution {
     }
 }
 ```
-
-
 
 # 68-II. 二叉树的最近公共祖先
 ![](images/2022-03-23-10-21-00.png)
