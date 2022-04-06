@@ -6,7 +6,7 @@ import javax.swing.*;
 /**
  * Shows animated bouncing balls.
  * @version 1.33 2007-05-17
- * @author Cay Horstmann
+ * @author CayHorseman
  */
 public class BounceThread
 {
