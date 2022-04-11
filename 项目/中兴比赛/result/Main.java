@@ -187,7 +187,7 @@ class Solution {
         // 设基站为A点，无人机为M点，s_AM表示AM之间的距离
         double s_AM_2 = Math.pow(jizhan[0] - node[0], 2) + Math.pow(jizhan[1] - node[1], 2) + Math.pow(jizhan[2] - node[2], 2);
         double s_AM = Math.sqrt(s_AM_2);
-        double s_AM_changed = Math.sqrt(Math.pow(jizhan[0] - v * (tf + s_AM / 1000) - node[0], 2) + Math.pow(jizhan[1] - node[1], 2) + Math.pow(H, 2));
+        double s_AM_changed = Math.sqrt(Math.pow(jizhan[0] - v * (tf + s_AM / 10000) - node[0], 2) + Math.pow(jizhan[1] - node[1], 2) + Math.pow(H, 2));
         return s_AM_changed;
     }
 
