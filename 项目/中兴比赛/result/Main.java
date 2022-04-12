@@ -14,45 +14,51 @@ public static void main(String[] args) {
     double[][] end={{1200, 700, 0},{-940, 1100, 0}};
     double[] t_start={0, 4.7, 16.4};
     int index=1;
-    for(double[] cur_end :end){     
-        for(double cur_t_start:t_start){
-            Solution solution=new Solution(start, cur_end, 5, 10, 90, 80, 125, 70, 0.1, cur_t_start);
-            int[] first_node=solution.start_firstnode_search();
-            solution.transfer(first_node);
-            List<double[]> pp=solution.path;
-            System.out.println(dec.format(cur_t_start)+","+"0,"+index+","+dec.format(solution.t_end-cur_t_start));
-            double[] x=null;
-            for(int i=0;i<pp.size();i++){
-                x=pp.get(i);
-                System.out.print("("+dec.format(x[0])+","+((int)x[1])+","+((int)x[2])+")");
-                if(i!=pp.size()-1){
-                    System.out.print(",");
-                }
-                else{
-                    System.out.println("");
-                }
-            }
-        }
-        index++;
-    }
+    // for(double[] cur_end :end){     
+    //     for(double cur_t_start:t_start){
+    //         Solution solution=new Solution(start, cur_end, 5, 10, 90, 80, 125, 70, 0.1, cur_t_start);
+    //         int[] first_node=solution.start_firstnode_search();
+    //         solution.transfer(first_node);
+    //         List<double[]> pp=solution.path;
+    //         System.out.println(dec.format(cur_t_start)+","+"0,"+index+","+dec.format(solution.t_end-cur_t_start));
+    //         double[] x=null;
+    //         for(int i=0;i<pp.size();i++){
+    //             x=pp.get(i);
+    //             System.out.print("("+dec.format(x[0])+","+((int)x[1])+","+((int)x[2])+")");
+    //             if(i!=pp.size()-1){
+    //                 System.out.print(",");
+    //             }
+    //             else{
+    //                 System.out.println("");
+    //             }
+    //         }
+    //     }
+    //     index++;
+    // }
 
     try {
         index=1;
         BufferedWriter out = new BufferedWriter(new FileWriter("result.txt"));
-        for(double[] cur_end :end){     
-            for(double cur_t_start:t_start){
-                Solution solution=new Solution(start, cur_end, 5, 10, 90, 80, 125, 70, 0.1, cur_t_start);
+        for(double cur_t_start:t_start){     
+            for(int j=0;j<end.length;j++){
+                Solution solution=new Solution(start, end[j], 5, 10, 90, 80, 125, 70, 0.1, cur_t_start);
                 int[] first_node=solution.start_firstnode_search();
                 solution.transfer(first_node);
                 List<double[]> pp=solution.path;
-                out.write(dec.format(cur_t_start)+","+"0,"+index+","+dec.format(solution.t_end-cur_t_start));
+                out.write(dec.format(cur_t_start)+","+"0,"+(j+1)+","+dec.format(solution.t_end-cur_t_start));
+                System.out.println(dec.format(cur_t_start)+","+"0,"+(j+1)+","+dec.format(solution.t_end-cur_t_start));
                 out.newLine();
                 double[] x=null;
                 for(int i=0;i<pp.size();i++){
                     x=pp.get(i);
                     out.write("("+dec.format(x[0])+","+((int)x[1])+","+((int)x[2])+")");
+                    System.out.print("("+dec.format(x[0])+","+((int)x[1])+","+((int)x[2])+")");
                     if(i!=pp.size()-1){
                         out.write(",");
+                        System.out.print(",");
+                    }
+                    else{
+                        System.out.println("");
                     }
                 }
                 out.newLine();
@@ -105,13 +111,16 @@ class Solution {
         this.D = D;
         this.tf = tf;
         this.t_start = t_start;
-        this.t_cur = t_start;
         update_relation(start, end);
+        update_start(t_start);
+        update_end(t_start);
+        this.t_cur = t_start;
     }
 
     // 根据起点和终点找到起点将转发的第一个无人机
     public int[] start_firstnode_search() {
         double[] tmp_node = new double[]{Math.floor(start[0] / d_IntraOrbit), Math.floor(start[1] / d_InterOrbit), H};
+        // System.out.printf(Arrays.toString(tmp_node));
         double[] dxdy = get_dxdy(relation);
         double[] cur_node = new double[]{tmp_node[0] + dxdy[0], tmp_node[1] + dxdy[1], H};
         double[] node = null;
@@ -140,6 +149,7 @@ class Solution {
 
         // 记录路径，更新终点位置
         double dt = tf + get_distance(start, new double[]{res[0] * d_IntraOrbit, res[1] * d_InterOrbit, H}) / 10000;
+        dt=Math.ceil(dt*10000)/10000;
         t_cur = t_start + dt;
         double[] record = {t_cur, res[0], res[1]};
         path.add(record);
@@ -170,7 +180,7 @@ class Solution {
             if (start[1] <= end[1]) {
                 relation[1] = 1;
             } else if (start[1] > end[1]) {
-                relation[3] = 0;
+                relation[3] = 1;
             }
         } else if (start[0] > end[0]) {
             if (start[1] <= end[1]) {
@@ -202,6 +212,13 @@ class Solution {
         return;
     }
 
+    // 更新起点位置
+    private void update_start(double t) {
+        start[0] = start[0] - v * t;
+        return;
+    }
+
+
     // 从第一个无人机开始转发直到终点
     public void transfer(int[] cur_node) {
         double[] node = {cur_node[0] * d_IntraOrbit, cur_node[1] * d_InterOrbit, H};
@@ -210,6 +227,7 @@ class Solution {
         double min_distance = Double.MAX_VALUE;
         if (communicate_distance(node, end) <= D) {
             t_end = t_cur + tf + get_distance(end, new double[]{cur_node[0] * d_IntraOrbit, cur_node[1] * d_InterOrbit, H}) / 10000;
+            t_end=Math.ceil(t_end*10000)/10000;
             return;
         }
         for (int m = cur_node[0]; ; m += search_move[index_relation][0]) {
@@ -238,6 +256,7 @@ class Solution {
             }
         }
         double dt = tf + get_distance(node, new double[]{next_node[0] * d_IntraOrbit, next_node[1] * d_InterOrbit, H})/10000;
+        dt=Math.ceil(dt*10000)/10000;
         t_cur += dt;
         double[] record = {t_cur, next_node[0], next_node[1]};
         path.add(record);
