@@ -42,7 +42,8 @@ public class Solution {
         double[] dxdy=get_dxdy(relation);
         double[] cur_node=new double[]{tmp_node[0]+dxdy[0],tmp_node[1]+dxdy[1],H};
         for(int i=cur_node[0];;i+=search_move[index_relation][0]){
-            
+            int j=cur_node[1];
+            if(dxdy)
         }
     }
 
@@ -66,7 +67,6 @@ public class Solution {
         return null;
     }
 
-    private get_arange_matrix()
 
     private void update_relation(double[] start,double[] end){
         if(start[0]<=end[0]){
