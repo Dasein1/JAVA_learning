@@ -129,12 +129,12 @@ class Solution {
         for (int m = (int) cur_node[0]; ; m += search_move[index_relation][0]) {
             int n = (int) cur_node[1];
             node = new double[]{m * d_IntraOrbit, n * d_InterOrbit, H};
-            if (communicate_distance(node, start) > D) {
+            if (communicate_distance(start, node) > D) {
                 break;
             } else {
                 for (; ; n += search_move[index_relation][1]) {
                     node = new double[]{m * d_IntraOrbit, n * d_InterOrbit, H};
-                    if (communicate_distance(node, start) > D) {
+                    if (communicate_distance(start, node) > D) {
                         break;
                     } else {
                         if (get_distance(node, end) < min_distance) {
@@ -225,7 +225,7 @@ class Solution {
         double[] tmp_node;
         int[] next_node = new int[2];
         double min_distance = Double.MAX_VALUE;
-        if (communicate_distance(node, end) <= D) {
+        if (communicate_distance(end, node) <= D) {
             t_end = t_cur + tf + get_distance(end, new double[]{cur_node[0] * d_IntraOrbit, cur_node[1] * d_InterOrbit, H}) / 10000;
             t_end=Math.ceil(t_end*10000)/10000;
             return;
