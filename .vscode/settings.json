@@ -3,8 +3,9 @@
         "unsynch"
     ],
     "java.project.sourcePaths": [
+        "项目/中兴比赛/test",
         "项目/中兴比赛/src",
         "项目/中兴比赛/result",
-        "项目/中兴比赛/test"
+        "JavaGuide/重要知识点"
     ]
 }
