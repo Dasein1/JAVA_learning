@@ -204,7 +204,7 @@ class Solution {
 		double s_AM_2 = Math.pow(jizhan[0] - node[0], 2) + Math.pow(jizhan[1] - node[1], 2) + Math.pow(jizhan[2] - node[2], 2);
 		s_AM_2=Math.floor(s_AM_2*10)/10;
 		double s_AM = Math.sqrt(s_AM_2);
-		s_AM=Math.floor(s_AM*10)/10;
+		s_AM=Math.floor(s_AM*2)/2;
 		double s_AM_changed = Math.sqrt(Math.pow(jizhan[0] - v * (tf + s_AM / 10000) - node[0], 2) + Math.pow(jizhan[1] - node[1], 2) + Math.pow(H, 2));
 		s_AM_changed=Math.floor(s_AM_changed*10)/10;
 		return s_AM_changed;
@@ -241,7 +241,7 @@ class Solution {
 		double min_distance = Double.MAX_VALUE;
 		if (communicate_distance(end, node) <= D) {
 			t_end = t_cur + tf + get_distance(end, new double[]{cur_node[0] * d_IntraOrbit, cur_node[1] * d_InterOrbit, H}) / 10000;
-			t_end=Math.floor(t_end*10000)/10000;
+			t_end=Math.floor(t_end*8000)/8000;
 			return;
 		}
 		for (int m = cur_node[0]; ; m += search_move[index_relation][0]) {
@@ -270,7 +270,7 @@ class Solution {
 			}
 		}
 		double dt = tf + get_distance(node, new double[]{next_node[0] * d_IntraOrbit, next_node[1] * d_InterOrbit, H})/10000;
-		dt=Math.floor(dt*10000)/10000;
+		dt=Math.floor(dt*8000)/8000;
 		t_cur += dt;
 		double[] record = {t_cur, next_node[0], next_node[1]};
 		path.add(record);
