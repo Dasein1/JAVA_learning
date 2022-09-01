@@ -1,14 +1,10 @@
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+
 public class Test {
     public static void main(String[] args) {
-        A a=new A() {
-        };
-        a.hashCode();
+        BufferedInputStream
     }
 }
-abstract class A{
-    int a=0;
-}
 
-class B extends A{
-
-}
