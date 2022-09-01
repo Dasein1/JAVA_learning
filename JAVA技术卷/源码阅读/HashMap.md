@@ -1,4 +1,6 @@
 https://zhuanlan.zhihu.com/p/79219960
+https://blog.csdn.net/yuhualee/article/details/114080773
+
 
 流程图：
 1.什么时候会出现hash冲突？为什么会出现？
@@ -25,7 +27,7 @@ Java %是取余
 1）数组中原元素的key与当前元素的key是否相同，相同则替换，否则下一步
 2) 用instanceof判断插入的数据结构是红黑树还是链表  [java中 instanceof 的用法](https://blog.csdn.net/YXXXYX/article/details/120205124)
 3) 如果是红黑树直接putTreeVal
-4) 如果数据结构是链表，遍历链表看是否存在与当前元素的key相同的元素，存在就直接使用新的value替换掉旧的，不存在直接newNode并判断当前链表长度是否大于阈值8且数组长度是否超过64，是则执行链表转红黑树，
-5) 插入后判断实际存在的键值对数量size是否大于阈值threshold，如果大于就开始扩容
+4) 如果数据结构是链表，遍历链表看是否存在与当前元素的key相同的元素，存在就直接使用新的value替换掉旧的，不存在直接newNode插入链表末端并判断当前链表长度是否大于阈值8且数组长度是否>=64，是则执行链表转红黑树，否则进行扩容，最后判断实际存在的键值对数量size是否大于阈值threshold，如果大于就开始扩容
 
 ![](images/2022-07-05-15-45-07.png)
+HashMap数组长度是否超过64改为HashMap数组长度是否大于等于64
