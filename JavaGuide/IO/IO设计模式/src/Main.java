@@ -3,52 +3,43 @@ import java.util.*;
 public class Main{
     public static void main(String[] args){
         Scanner sc=new Scanner(System.in);
-        int N=sc.nextInt();
-        long[] x=new long[N];
-        long[] r=new long[N];
-        for(int i=0;i<N;i++){
-            x[i]=sc.nextLong();
-        }
-        long result_1=0;
-        long result_2=0;
-        for(int k=0;k<N;k++){
-            r[k]=getResult1(N,x,k);
-        }
-        for(int k=0;k<N;k++){
-            r[k]=r[k]+getResult2(N,x,k);
-        }
-
-        long absMax=0;
-        long result=0;
-        for(int i=1;i<N;i++){
-            if(Math.abs(r[i])>absMax){
-                result=Math.abs(r[i]);
+        String str=sc.nextLine();
+        HashMap<Character,Integer> map=new HashMap<>();
+        for(int i=0;i<str.length();i++){
+            Integer tmp=map.get(str.charAt(i));
+            if(tmp==null){
+                map.put(str.charAt(i),1);
+            }
+            else{
+                map.put(str.charAt(i),tmp+1);
             }
         }
-        for(long value:r){
-            System.out.printf(value+" ");
-        }
-        System.out.println(result);
-
+        System.out.println(getString(map));
 
 
     }
 
-    public static long getResult1(int N,long[] x,int k){
-        long sum=0;
-        for(int i=0;i+k<N;i++){
-            sum=sum+x[i]*x[i+k];
+    public static StringBuilder getString(Map<Character,Integer> map){
+        List<Map.Entry<Character,Integer>> entryList=new ArrayList<>(map.entrySet());
+        Collections.sort(entryList,new Comparator<Map.Entry<Character,Integer>>(){
+            @Override
+            public int compare(Map.Entry<Character,Integer> o1,Map.Entry<Character,Integer> o2){
+                if(o1.getValue()-o2.getValue()<0){
+                    return -1;
+                }
+                else if(o1.getValue()-o2.getValue()>0){
+                    return 1;
+                }
+                else{
+                    return o1.getKey()-o2.getKey();
+                }
+            }
+        });
+        StringBuilder stringBuilder=new StringBuilder();
+        for(Map.Entry<Character,Integer> e:entryList){
+            stringBuilder.append(e.getKey());
         }
-        return sum;
-    }
-
-    public static long getResult2(int N,long[] x,int k){
-        long sum=0;
-        for(int i=0;i<k+1;i++){
-            sum=sum+x[i]*x[i+N-1-k];
-        }
-        return sum;
+        return stringBuilder;
     }
 
 }
-
