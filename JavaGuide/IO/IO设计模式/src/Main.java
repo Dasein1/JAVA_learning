@@ -1,45 +1,89 @@
-import java.util.*;
-
 public class Main{
-    public static void main(String[] args){
-        Scanner sc=new Scanner(System.in);
-        String str=sc.nextLine();
-        HashMap<Character,Integer> map=new HashMap<>();
-        for(int i=0;i<str.length();i++){
-            Integer tmp=map.get(str.charAt(i));
-            if(tmp==null){
-                map.put(str.charAt(i),1);
-            }
-            else{
-                map.put(str.charAt(i),tmp+1);
-            }
-        }
-        System.out.println(getString(map));
+
+public static void main(String[] args){
+
+ new Task1().doCheck();
+
+new Task2().doCheck();
+
+}
+
+}
 
 
-    }
 
-    public static StringBuilder getString(Map<Character,Integer> map){
-        List<Map.Entry<Character,Integer>> entryList=new ArrayList<>(map.entrySet());
-        Collections.sort(entryList,new Comparator<Map.Entry<Character,Integer>>(){
-            @Override
-            public int compare(Map.Entry<Character,Integer> o1,Map.Entry<Character,Integer> o2){
-                if(o1.getValue()-o2.getValue()<0){
-                    return -1;
-                }
-                else if(o1.getValue()-o2.getValue()>0){
-                    return 1;
-                }
-                else{
-                    return o1.getKey()-o2.getKey();
-                }
-            }
-        });
-        StringBuilder stringBuilder=new StringBuilder();
-        for(Map.Entry<Character,Integer> e:entryList){
-            stringBuilder.append(e.getKey());
-        }
-        return stringBuilder;
-    }
+
+
+
+
+abstract class Check{
+
+ public abstract void step1();
+
+public abstract void step2();
+
+ public void step3(){
+
+ System.out.println("提交巡查结果");
+
+};
+
+final public void doCheck(){
+
+ this.step1();
+
+this.step2();
+
+this.step3();
+
+}
+
+}
+
+
+
+class Task1 extends Check{
+
+@Override
+
+ public void step1(){
+
+ System.out.println("现场扫描视频");
+
+}
+
+
+
+@Override
+
+public void step2(){
+
+System.out.println("巡检机房的服务器的状态");
+
+}
+
+}
+
+
+
+class Task2 extends Check{
+
+@Override
+
+public void step1(){
+
+System.out.println("远程视频");
+
+}
+
+
+
+@Override
+
+public void step2(){
+
+ System.out.println("巡检课堂的学生出勤率");
+
+}
 
 }
