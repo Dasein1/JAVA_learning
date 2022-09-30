@@ -9,6 +9,13 @@ https://blog.csdn.net/yuhualee/article/details/114080773
 putVal参数：
 1.evict参数，何为创建模式
 
+
+Node<K,V>[] table
+int size  键值对个数
+int threshold 键值对最大个数
+final float loadFactor;  负载因子默认0.75
+
+
 存数组
 [Hashmap节点中Node数据结构浅谈](https://blog.csdn.net/weixin_43919032/article/details/114229234)
 1.如果当前数组是空的，通过resize()方法创建一个新数组
@@ -27,7 +34,11 @@ Java %是取余
 1）数组中原元素的key与当前元素的key是否相同，相同则替换，否则下一步
 2) 用instanceof判断插入的数据结构是红黑树还是链表  [java中 instanceof 的用法](https://blog.csdn.net/YXXXYX/article/details/120205124)
 3) 如果是红黑树直接putTreeVal
-4) 如果数据结构是链表，遍历链表看是否存在与当前元素的key相同的元素，存在就直接使用新的value替换掉旧的，不存在直接newNode插入链表末端并判断当前链表长度是否大于阈值8且数组长度是否>=64，是则执行链表转红黑树，否则进行扩容，最后判断实际存在的键值对数量size是否大于阈值threshold，如果大于就开始扩容
+4) 如果数据结构是链表，遍历链表看是否存在与当前元素的key相同的元素，存在就直接使用新的value替换掉旧的，不存在直接newNode插入链表末端并判断当前链表长度是否大于阈值8且加上新节点后数组长度是否>64，是则执行链表转红黑树，否则进行扩容，最后判断实际存在的键值对数量size是否大于阈值threshold，如果大于就开始扩容
 
 ![](images/2022-07-05-15-45-07.png)
-HashMap数组长度是否超过64改为HashMap数组长度是否大于等于64
+HashMap数组长度是否超过64改为HashMap加上新节点后数组长度是否大于64
+
+4.扩容机制
+new()  只设置默认负载因子
+
