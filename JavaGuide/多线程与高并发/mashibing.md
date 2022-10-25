@@ -90,7 +90,7 @@ JVM的内存屏障
 
 
 # 6.超线程
-![](images/2022-08-20-20-47-40.png)
+![](images/2022-08-20-20-47-40.png)v
 
 
 # 7.强软弱虚 Java中的四种引用类型
@@ -163,3 +163,40 @@ CallerRuns:调用者处理任务（哪个线程调用了execute哪个线程去�
 
 ![](images/2022-08-30-14-16-25.png)
 
+
+
+# java多线程访问共享变量的过程？
+[Java的工作内存是什么？](https://www.zhihu.com/question/42234786/answer/2518636302)
+[Java并发，什么是可见性？为什么会出现”不可见“ ](https://zhuanlan.zhihu.com/p/525560668)
+
+```java
+public class Counter {
+    private int count;
+    public void increment() {
+        this.count++;
+    }
+    public int getCount() {
+        return this.count;
+    }
+}
+```
+
+
+```java
+javac Counter.java
+javap -verbose Counter.class
+
+// Counter类 increment方法的字节码
+  public void increment();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: aload_0                 // 
+         1: dup                     
+         2: getfield      #2         // Field count:I 从主内存加载到工作内存（该线程的操作数栈）
+         5: iconst_1
+         6: iadd
+         7: putfield      #2         // Field count:I  从工作内存写入主内存
+        10: return
+```
