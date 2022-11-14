@@ -16,6 +16,8 @@ https://blog.csdn.net/fuchangyaocool/article/details/119382898
 
 
 
+# mysql是如何更新数据的？
+https://www.modb.pro/db/49325
 
 # 当所有字段都是索引列时，无论什么查询都会使用索引
 ```sql
