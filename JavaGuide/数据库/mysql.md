@@ -1,5 +1,22 @@
 # mysql是如何查询数据的？
  https://baijiahao.baidu.com/s?id=1693718883799963534&wfr=spider&for=pc
+
+# mysql逻辑存储结构
+行-> 页（页的大小默认是16kb，可以设置，也就是B+树一个节点的大小）->区 （任何情况固定未1MB）-> 段 -> 表空间
+
+# 硬件存储结构
+https://blog.csdn.net/fuchangyaocool/article/details/119382898
+扇区：512byte，硬盘读写的最小单位
+
+磁盘块：通常为4kb，系统读写数据的最小单元，
+
+页：内存的最小存储单元,通常为4kb，磁盘块的2^n倍
+
+
+
+
+
+
 # 当所有字段都是索引列时，无论什么查询都会使用索引
 ```sql
 create table test1 (id int primary key,a int,b int,c int);
@@ -249,35 +266,86 @@ innodb存储引擎，有两部分，redo log buffer，redo log file
 1：写入page cache并调用fsync刷盘
 2：只把redo log buffer写入page cache 
 
+4.组提交
+
 
 ### 有什么用？
 redo log是在事务提交后生成的，如果此时服务宕机，后期重启可以用redo日志恢复数据。
 保证事务的持久性。
 
 ### 如何进行恢复的？
+存储数据的每一页的头部有一个值FIL_PAGE_LSN,记录该页的LSN，表示数据写入的总量
+Log sequence number：表示写redo log的最新LSN
+Log flushed up to 表示刷新到重做日志文件的LSN
+Last checkpoint at表示刷新到磁盘的LSN
 
 
 
 ## binlog
 ### 在哪里产生？
-mysql数据库服务层
+mysql数据库服务层,默认关闭
+
+### 记录什么？
+1.statement:记录原始语句       
+缺点：update  T  set time=now()   where  id=1，如果用statement格式会导致与原库的数据不一致       
+2.row:不仅记录语句还记录操作的具体数据       缺点：比较占用空间，恢复与同步会消耗IO资源       
+3.mixed:MYSQL会判断这条语句是否可能引起数据不一致，如果是就用row格式，否就用statement格式
 
 
-###
+### 如何记录？
+
+
+### 有什么用？
+
+### 如何进行恢复？
+
+
 
 
 ## undo log
 ### 在哪里产生？
 innodb存储引擎
+以undo segment的形式位于共享表空间内
 ### 记录什么？
 逻辑日志，记录的是每行记录
 ### 怎么记录？
 1.随机读写
 
-
 ### 有什么用？
 实现事务回滚，保证原子性
 与锁共同实现MVCC的功能，保证隔离性
+
+### 如何回滚？
+对于每个INSERT，InnoDB存储引擎会完成一个DELETE;
+对于每个DELETE，InnoDB存储引擎会执行一个INSERT;
+
+### 如何帮助实现MVCC？
+用户读取一行记录时，若该记录已经被其他事务占用，当前事务可以通过undo读取之前的行版本信息，以此实现非锁定读取。
+
+
+# MVCC
+## 一致性非锁定读
+### 通常做法
+通常做法，通常做法是加一个版本号或者时间戳字段，在更新数据的同时版本号 + 1 或者更新时间戳。查询时，将当前可见的版本号与对应记录的版本号进行比对，如果记录的版本小于可见版本，则表示该记录可见。
+
+### MySQL中
+MySQL使用MVCC实现非一致性锁定读，在 Repeatable Read 和 Read Committed 两个隔离级别下，如果是执行普通的 select 语句（不包括 select ... lock in share mode ,select ... for update）则会使用 一致性非锁定读（MVCC）。并且在 Repeatable Read 下 MVCC 实现了可重复读和防止部分幻读
+部分是指普通select语句，对于当前都会产生幻读，所以，InnoDB 在实现Repeatable Read 时，如果执行的是当前读，则会对读取的记录使用 Next-key Lock ，来防止其它事务在间隙间插入数据
+
+## 锁定读
+如果执行的是下列语句，就是 锁定读（Locking Reads）
+
+select ... lock in share mode
+select ... for update
+insert、update、delete 操作
+在锁定读下，读取的是数据的最新版本，这种读也被称为 当前读（current read）。锁定读会对读取到的记录加锁：
+
+select ... lock in share mode：对记录加 S 锁，其它事务也可以加S锁，如果加 x 锁则会被阻塞
+
+select ... for update、insert、update、delete：对记录加 X 锁，且其它事务不能加任何锁
+
+## 隔离级别的实现
+Sp'ro'i'n
 
 # 数据库ACID
 https://developer.aliyun.com/article/258340
