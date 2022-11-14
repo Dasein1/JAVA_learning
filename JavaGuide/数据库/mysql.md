@@ -1,5 +1,9 @@
 # mysql是如何查询数据的？
  https://baijiahao.baidu.com/s?id=1693718883799963534&wfr=spider&for=pc
+
+# mysql是如何更新数据的？
+https://www.modb.pro/db/49325
+
 # 当所有字段都是索引列时，无论什么查询都会使用索引
 ```sql
 create table test1 (id int primary key,a int,b int,c int);
