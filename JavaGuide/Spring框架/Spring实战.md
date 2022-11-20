@@ -131,7 +131,7 @@ BeanDefinitionPostPorcessor的postProcessBeanDefinitionRegistry方法和postProc
 # SpringAOP
 ![](images/2022-11-17-10-25-32.png)
 ## AOP相关概念
-![](images/2022-11-17-14-04-57.png)
+![](images/2022-11-17-14-04-57.png)v
 ## 基于XML配置的AOP
 ![](images/2022-11-17-14-08-06.png)
 ![](images/2022-11-17-14-11-04.png)
@@ -142,3 +142,21 @@ BeanDefinitionPostPorcessor的postProcessBeanDefinitionRegistry方法和postProc
 ### 切点表达式的配置语法
 ![](images/2022-11-17-14-46-26.png)
 ![](images/2022-11-17-14-47-27.png)
+
+### 五种通知类型
+![](images/2022-11-18-15-12-10.png)
+前置的增强
+方法{
+环绕前置增强...
+原方法执行逻辑
+环绕后置增强...
+}
+最终的增强...（无论是否抛出异常都执行）
+返回后增强...（若抛出异常则不执行）
+![](images/2022-11-18-16-27-25.png)
+![](images/2022-11-18-16-27-46.png)
+
+### advisor配置方式
+![](images/2022-11-18-16-29-26.png)
+![](images/2022-11-18-19-19-35.png)
+![](images/2022-11-18-19-20-07.png)
