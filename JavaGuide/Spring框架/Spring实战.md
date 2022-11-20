@@ -157,8 +157,7 @@ BeanDefinitionPostPorcessor的postProcessBeanDefinitionRegistry方法和postProc
 
 # Spring整合第三方框架
 ![](images/2022-11-20-19-08-23.png)
-## 整合MyBatis
-![](images/2022-11-20-19-11-02.png)
+
 ### 单独MyBatis
 1.配置porm文件导入mybatis jar包
 ![](images/2022-11-20-19-28-27.png)
@@ -170,13 +169,15 @@ BeanDefinitionPostPorcessor的postProcessBeanDefinitionRegistry方法和postProc
 
 3.创建xml关联mapper
 ![](images/2022-11-20-20-27-08.png)
-xml所在包名和接口代码所在包名一致
+xml所在包名和接口代码所在包名一致（注意用/才能创建多级文件夹，而不是.）
 
-4.
-
-
-
+4.测试
 ![](images/2022-11-20-19-30-27.png)
+
+## 整合MyBatis
+![](images/2022-11-20-19-11-02.png)
+![](images/2022-11-20-22-10-07.png)
+
 # SpringAOP
 ![](images/2022-11-17-10-25-32.png)
 ## AOP相关概念
