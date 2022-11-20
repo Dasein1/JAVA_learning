@@ -86,6 +86,17 @@ getBean前容器里只有FactoryBean对象，要用的时候再去创建对象�
 
 # Spring配置非自定义Bean
 ![](images/2022-11-16-21-14-21.png)
+## 配置DruidDataSource
+![](images/2022-11-20-16-58-20.png)
+找到DruidDataSource需要配置的属性
+![](images/2022-11-20-16-59-27.png)
+![](images/2022-11-20-17-17-08.png)
+
+## 配置MyBatis的SqlSessionFactory交由Spring管理
+![](images/2022-11-20-19-46-17.png)
+
+
+
 
 # SpringBean的实例化流程
 ![](images/2022-11-16-21-18-59.png)
@@ -126,8 +137,46 @@ BeanDefinitionPostPorcessor的postProcessBeanDefinitionRegistry方法和postProc
 
 ## Bean的生命周期
 ![](images/2022-11-17-10-20-19.png)
+### SpringBean的初始化过程
+![](images/2022-11-20-18-06-33.png)
+### Bean实例属性填充
+![](images/2022-11-20-18-18-28.png)
+![](images/2022-11-20-18-21-38.png)
+#### 循环依赖
+![](images/2022-11-20-18-31-28.png)
+![](images/2022-11-20-18-34-40.png)
+![](images/2022-11-20-18-38-15.png)
+初次实例化bean后，包一层变为ObjectFactory（通过getObject返回该实例化bean）放到容器中
+![](images/2022-11-20-18-48-03.png)
+![](images/2022-11-20-18-50-50.png)
+三级缓存流程图
+![](images/2022-11-20-18-51-21.png)
+
+### Aware接口
+![](images/2022-11-20-19-05-00.png)
+
+# Spring整合第三方框架
+![](images/2022-11-20-19-08-23.png)
+## 整合MyBatis
+![](images/2022-11-20-19-11-02.png)
+### 单独MyBatis
+1.配置porm文件导入mybatis jar包
+![](images/2022-11-20-19-28-27.png)
+
+查看mybatis官方文档
+2.创建XML，构建SqlSessionFactory
+![](images/2022-11-20-20-25-35.png)
+配置datasource
+
+3.创建xml关联mapper
+![](images/2022-11-20-20-27-08.png)
+xml所在包名和接口代码所在包名一致
+
+4.
 
 
+
+![](images/2022-11-20-19-30-27.png)
 # SpringAOP
 ![](images/2022-11-17-10-25-32.png)
 ## AOP相关概念
