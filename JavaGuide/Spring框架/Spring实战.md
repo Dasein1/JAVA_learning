@@ -255,7 +255,9 @@ beanName被赋值为value值，如果对value进行赋值，那么beanName被自
 ### @Profile
 ![](images/2022-11-21-21-43-44.png)
 
-
+## 注解方式整合MyBatis
+![](images/2022-11-22-10-26-14.png)
+![](images/2022-11-22-10-26-57.png)
 
 # SpringAOP
 ![](images/2022-11-17-10-25-32.png)
@@ -265,6 +267,8 @@ beanName被赋值为value值，如果对value进行赋值，那么beanName被自
 ![](images/2022-11-17-14-08-06.png)
 ![](images/2022-11-17-14-11-04.png)
 ![](images/2022-11-17-14-13-13.png)
+![](images/2022-11-22-18-34-52.png)
+[是否必须导入aspectjweaver包](https://blog.csdn.net/wang489687009/article/details/121429813)
 ![](images/2022-11-17-14-43-04.png)
 ### 切点表达式配置方式
 ![](images/2022-11-17-14-45-46.png)
@@ -289,3 +293,58 @@ beanName被赋值为value值，如果对value进行赋值，那么beanName被自
 ![](images/2022-11-18-16-29-26.png)
 ![](images/2022-11-18-19-19-35.png)
 ![](images/2022-11-18-19-20-07.png)
+
+## AOP底层两种生成Proxy方式
+![](images/2022-11-22-10-35-56.png)
+![](images/2022-11-22-10-40-17.png)
+### Cglib基于超类的动态代理
+![](images/2022-11-22-11-17-20.png)
+
+## 注解开发SpringAOP
+@Aspect注解通知类
+@Before等注解通知方法
+![](images/2022-11-22-11-54-14.png)
+![](images/2022-11-22-11-55-48.png)
+![](images/2022-11-22-11-56-23.png)
+![](images/2022-11-22-12-08-43.png)
+
+# 基于AOP的声明式事务控制
+## Spring事务编程描述
+![](images/2022-11-22-12-37-42.png)
+![](images/2022-11-22-12-39-40.png)
+
+## 转账业务环境搭建
+![](images/2022-11-22-14-40-29.png)
+![](images/2022-11-22-17-14-32.png)
+导入spring-jdbc的包就包含事务相关的包
+### xml方式声明式事务
+![](images/2022-11-22-18-37-30.png)
+![](images/2022-11-22-19-30-10.png)
+![](images/2022-11-22-19-39-20.png)
+![](images/2022-11-22-19-55-38.png)
+[聊聊spring七种事务传播行为](https://zhuanlan.zhihu.com/p/436332667)
+挂起：事务回滚互不影响
+加入：子事务回滚，父事务也回滚
+REQUIRED：
+B要有事务,A有事务则B加入A事务成为一个事务，没有则自己创建
+注意：异常不被捕捉或跨方法被捕捉则会都回滚
+
+REQUIRES_NEW：
+B要有新事务,A事务被挂起
+
+SUPPORTS：
+A有事务，则B加入A的事务，A没有事务，则B也没有事务
+
+NOT_SUPPORTED:
+B以非事务状态运行,A有事务则挂起
+
+NEVER:
+B不支持事务，如果A有事务，则B抛出异常
+
+NESTED：
+异常
+保存状态节点，从而避免所有嵌套事务都回滚
+[NESTED和REQUITES_NEW区别](https://www.cnblogs.com/lzfhope/p/16307327.html)
+
+MANDATORY:
+B要加入A的事务，如果A没有事务就抛出异常
