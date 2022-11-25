@@ -56,9 +56,13 @@ select * from user where  username='xxx' and password='xxx' or '1' = '1'
 ![](images/2022-11-23-11-19-55.png)
 https://blog.csdn.net/alex_xfboy/article/details/83901351?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-83901351-blog-52623450.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-83901351-blog-52623450.pc_relevant_recovery_v2&utm_relevant_index=3
 
+
+[prepare statement只能参数化值](https://www.saoniuhuo.com/question/detail-2000233.html)
 [Stopwatch使用](https://blog.csdn.net/m0_37899908/article/details/125341503)
 
 useServerPrepStmts=true&cachePrepStmts=true
+
+==没开useServerPrepStmts，不会预编译，同statement一样，开了会预编译，但是客户端mysql-connector-jar实现的缓存不开启则会导致preparedstament关闭后客户端对statement预编译id的缓存失效，下个相同SQL语句的preparedstament执行将仍需预编译==
 
 # 数据库连接池
 ![](images/2022-11-23-15-26-09.png)
