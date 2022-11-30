@@ -109,7 +109,7 @@ resource资源下的文件在编译后会放到java包对应的目录下
 解决：
 ![](images/2022-11-25-14-42-49.png)
 ![](images/2022-11-25-14-42-17.png)
-
+[useGeneratedKeys、keyProperty、KeyColumn的使用](https://blog.csdn.net/munangs/article/details/123297002)
 ### 修改
 #### 修改全部字段
 ![](images/2022-11-25-14-44-13.png)
@@ -125,3 +125,27 @@ resource资源下的文件在编译后会放到java包对应的目录下
 
 ## 参数传递
 ![](images/2022-11-25-14-59-49.png)
+
+
+
+
+
+
+# 场景问题
+## 1.如何自定义数据库中数据类型和java中数据类型的转换方式？
+## 默认类型处理器
+![](images/2022-11-26-15-36-16.png)
+
+## 需求java的Date与数据库varchar毫秒值之间的转换
+![](images/2022-11-26-15-37-51.png)
+
+
+
+## 2.分页查询
+![](images/2022-11-27-10-57-53.png)
+### 2.1导入坐标
+![](images/2022-11-27-11-08-07.png)
+### 2.2 MyBatis核心配置文件中配置PageHelper插件
+![](images/2022-11-27-11-18-48.png)
+### 2.3 代码测试
+![](images/2022-11-27-11-15-20.png)
