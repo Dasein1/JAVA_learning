@@ -313,5 +313,527 @@ mv: 移动
 - df: 查看文件系统使用情况
     * df -h  单位改为M、G这种方便阅读的
 
-- du: 递归地查看
+- du: 递归地查看当前目录下每个文件的磁盘使用情况
+    * du -h
+    * du -sh/-s   仅查看当前目录的磁盘占用情况
+
+- mount: 用于把一些硬件设备或网络设备挂载到系统的指定目录下去，挂载完后我们就可以通过指定硬件设备或者网络设备读取里面内容
+
+- umount
+
+
+### 8.3.7   网络操作类
+- ifconfig 打印系统里面所有已经激活的网络端口信息
+    * ifconfig 网卡名字 192.168.1.213 更改对应网卡端口号
+    * ifconfig 网卡名字 down 关闭该网卡
+    * ifconfig 网卡名字 up 打开该网卡
+- ping 查看网络链接是否是通的
+
+
+### 8.3.8   控制终端类
+- clear
+
+### 8.3.9   开关机命令
+-reboot
+-poweroff 
+
+### 8.4 小技巧
+#### 8.4.1  命令/路径自动补全
+- tab
+- tabtab
+
+#### 8.4.2  重复执行技巧
+!!执行上次执行的命令
+sudo !! 拼接执行 
+
+# 9.使用编辑器
+## 9.1 gedit编辑器
+简单易懂，依赖图形界面
+## 9.2 vi/vim编辑器
+### 9.2.1 vi与vim的区别：
+- vim是v的升级版本,兼容vi
+- vi按u只能撤销上次命令，而vim可以运行于unix，windows，mac等多操作平台
+- vim可以用不同的颜色来高亮代码
+- 可通过vimrc文件配置更加高级的功能
+
+### 9.2.2 vi/vim使用
+#### 安装
+sudo apt install vim
+#### vi/vim的三种模式
+- 一般模式（默认模式）
+- 插入模式（编辑模式）
+- 命令行模式
+#### 模式切换
+![](images/2022-12-05-17-25-20.png)
+
+#### 插入模式快捷键
+![](images/2022-12-05-17-29-49.png)
+
+
+#### 一般模式快捷键
+![](images/2022-12-05-17-33-13.png)
+![](images/2022-12-05-17-35-42.png)
+
+
+#### 命令行模式快捷键
+![](images/2022-12-05-17-38-56.png)
+
+
+# 10    Shell脚本编程
+## 10.1 Shell脚本简介
+### 10.1.1 Shell脚本是什么？
+- shell命令按一定语法组成的文件
   
+### 10.1.2 Shell脚本有什么用？
+（windows下）批处理文件/整合命令
+- 软件启动
+- 性能监控
+- 日志分析
+...
+
+### 10.1.3  Shell命令的本质
+用type命令来判断内置命令或外部命令
+- 内置命令
+    在shell启动时候就已经加载到到系统中去了，不用再从硬盘中加载出来运行
+- 外部命令
+    * shell在启动时设置了一个path环境变量，记录了外部命令对应应用程序所在目录
+    * 可以通过echo $PATH命令来打印环境变量
+- shell命令执行流程
+    先去找内置命令，找不到再去path目录下找外部命令
+
+- 自定义Shell命令
+    - 写一个main.c输出"hello,world!"
+    - gcc main.c -o hello
+    - 将hello文件放在path的一个环境变量目录中
+    - 在shell终端输入hello即可执行hello程序
+
+### 10.1.4 Shell脚本语言和C语言一样吗？
+- 编译型语言
+- 解释型语言
+
+### 10.1.5 常用的Shell解释器有哪些？
+cat /etc/shells
+Linux系统中shell解释器的位置都存在这个文件里
+
+### 10.1.6  第一个Shell脚本
+- vi hello.sh
+    - #!/bin/bash
+    - echo "hello,world!"
+
+### 10.1.7  shell启动方式
+- 当程序执行
+   - ./hello.sh
+- 指定解释器运行
+    - /bin/bash hello.sh 
+- source和.
+    - source hello.sh
+    - . hello.sh
+
+## 10.2 Shell脚本语法讲解
+### 10.2.1定义变量
+- variable=value
+- variable='value'
+- variable="value"
+
+variable=123
+variable=123 456 (x)
+variable='123 32'
+variable="213 412"
+
+
+### 10.2.2  使用变量
+- $variable
+- ${variable}
+
+### 10.2.3将命令的结果赋值给变量
+- variable=`command`
+- variable=$(command)
+
+### 10.2.4  删除变量
+- unset xxx
+
+
+### 10.2.5  特殊变量
+| 变量 | 含义 |
+| ---  | ---  |
+| $0  | 当前脚本的文件名 |
+| $n(n>=1) | 传递给脚本或函数的参数，n是一个数字，表示第几个参数，例如，第一个参数是$1，第二个参数是\$2 |
+| $# | 传递给脚本或函数的参数个数 |
+| $* | 传递给脚本或函数的所有参数 |
+| $@ | 传递给脚本或函数的所有参数,当被双引号""包含时，$@与$*稍有不同|
+| $? |  上个命令的退出状态或者获取函数返回的值   |
+| $$ |  当前shell进程ID，对于shell脚本，就是这些脚本所在的进程ID |
+
+
+### 10.2.6   字符串拼接
+并排放
+"${var}aa"
+
+### 10.2.7 读取从键盘输入的数据
+read a
+
+### 10.2.8 退出当前进程
+exit
+
+### 10.2.9 对整数进行数学运算
+(())
+
+### 10.2.10 逻辑与/或
+```
+command1 && command2
+``` 
+```
+command1 || command2
+```
+
+### 10.2.11 检测某个条件是否成立
+test expression和[ expression ]
+![](images/2022-12-06-10-44-11.png)
+
+test \$a -eq \$b && echo "a==b"
+
+### 10.2.12 
+![](images/2022-12-06-11-05-58.png)
+
+- for i in \$*
+  - 所有参数作为一个列表
+- for i in \"$*\"
+  - 所有参数作为一个字符串 
+
+# 11 Linux环境变量
+## 11.1 为什么需要环境变量
+Linux是一个多用户多任务的操作系统,每个系统需要的运行环境是不一样的，只有通过对Linux系统不同的用户设置不同的环境变量来满足不同用户的需求
+
+## 11.2 全局变量VS环境变量
+- 直接定义
+    - 只能在当前进程访问，其他进程和当前进程的子进程都是不能访问的
+- export
+    - 导出的变量可以在子进程中访问，但是在其他进程仍然不能被访问，如何解决呢？用shell配置文件
+![](images/2022-12-06-11-23-44.png)
+
+## 11.3 Shell配置文件
+在Shell进程每次启动的时候，都会执行shell配置文件里面的代码来初始化
+与Bash Shell有关的配置文件主要有
+1./etc/profile （所有用户登录都会执行）
+2.~/.bash_profile
+3.~/.bash_login
+4.~/.profile         （当前用户登录时才会执行）
+5.~/.bashrc
+6./etc/bashrc
+7./etc/bash.bashrc
+8./etc/profile.d/*.sh
+
+## 11.4 Shell执行顺序
+/etc/profiles->\~/.profile(\~/.bash_profile、\~/.bash_login 不同的Linux发行版本profile有不同的名字)
+
+## 11.5 修改配置文件
+全部用户、全部进程共享：/etc/bash.bashrc
+一个用户、全部进程共享：~/.bashrc
+
+## 11.6 shell启动方式对变量的影响
+子shell进程中使用/bin/bash和./
+变量只能在子shell进程中使用
+
+当前进程中执行:source和.
+
+
+# 12 构建deb软件安装包
+## 12.1 Linux软件包
+![](images/2022-12-06-15-12-10.png)
+### 12.1.1 了解Linux软件包的组成
+|**文件类型**|**保存目录**|
+|---|---|
+|普通程序|/usr/bin|
+|root权限程序|/usr/sbin|
+|程序配置文件|/etc|
+|日志文件|/var/log|
+|文档文件|/usr/share/doc|
+
+### 12.1.2 Linux软件包
+- 源码包：
+    优点：
+    * 开源免费
+    * 自由裁剪功能
+    * 修改源代码
+    缺点：
+    * 安装步骤繁琐
+    * 编译时间长
+    * 新手无法解决编译问题
+  
+- 二进制包
+    优点：
+    * 简单易用
+    * 安装速度快
+    缺点：
+    * 无法阅读修改源码
+    * 无法裁剪功能
+    * 依赖性强
+### 12.1.3 二进制包分类
+#### deb包
+**概念**
+Debian、Ubuntu、Deepin等Linux发行版的软件安装包/
+
+**deb包文件结构分析**
+- DEBIAN目录：
+    * control文件：
+        * Package：软件名称
+        * Version：版本
+        * Section：软件类别
+        * Priority：对系统的重要性
+        * Architecture：支持的硬件平台
+        * Maintainer: 软件包的维护者
+        * Description：对软件的描述
+    * preinst文件：安装之前执行的shell脚本
+    * postinst文件：安装之后执行的shell脚本
+    * prerm文件：卸载之前执行的shell脚本
+    * postrm文件：卸载之后执行的shell脚本
+    * copyright文件：版权声明
+    * changlog文件：修改记录
+- 软件具体安装目录：
+    视实际需求
+
+
+#### rpm包
+**概念**
+RedHat、Fedora、Centos等Linux发行版的软件安装包。
+
+### 12.1.4 dpkg工具
+**概念**
+底层的包管理工具，主要用于对已下载到本地和已经安装的deb包进行管理
+
+**常用命令**
+- 安装软件：dpkg -i xxxx.deb
+- 查看安装目录：dpkg -L xxxx
+- 显示版本：dpkg -l xxxx
+- 详细信息：dpkg -s xxxx
+- 罗列内容：dpkg -c xxxx.deb
+- 卸载软件：dpkg -r xxxx
+
+
+
+
+# 13 git简介和项目资料获取
+## 13.1 安装git
+Ubuntu:
+sudo apt install git -y
+
+# 14 gcc与Helloworld
+## gcc由来
+GNU组织、
+## GCC编译工具链
+- gcc编译器(预处理、编译)
+- binutils工具集(汇编、链接)
+## 运行第一个Helloworld
+- PC端Ubuntu
+- 开发板端debian
+
+# 15    ARM-GCC与交叉编译
+## ARM-GCC是什么？它与GCC有什么关系？
+编译工具链和目标程序运行相同的架构平台，就叫本地编译
+编译工具链和目标程序运行在不同的架构平台，叫做交叉编译
+ARM-GCC是针对arm平台的一款编译器，它是GCC编译工具链的一个分支
+
+## ARG-GCC进一步分类有哪些？
+第二项：linux none
+第三项：gnu：glibc    eabi:应用二进制标准接口  hf:支持硬浮点平台
+
+## 如何安装ARM-GCC？
+apt install gcc
+
+## ubuntu安装arm-gcc
+apt install gcc-arm-linux-gnueabihf
+
+## Linaro公司
+
+## 两个案例：
+在ARM架构上运行x86_64架构的程序
+在ARM架构上运行交叉编译的程序
+
+# 16.   Linux系统和HelloWorld
+## 三个问题
+- 了解Hello World程序的执行过程有什么不同？
+- 裸机开发的helloworld程序怎么执行的？
+- Linux系统下的Helloworld程序是怎么执行的？
+
+## 四个案例
+gcc 预处理c文件
+gcc 编译c文件
+gcc 编译汇编
+gcc 链接可重定位文件
+
+
+
+# 17   Makefile
+## 17.1 Makefile简介
+### Makefile是什么？
+gcc hello.c -o hello
+gcc aa.c bb.c ... -o 
+### make工具和makefile
+make工具：找出修改过的文件，根据依赖关系，找出受影响的相关文件，最后按照规则单独编译这些文件。
+
+Makefile文件：记录依赖关系和编译规则
+
+## 17.2 Makefile三要素
+### 三要素是什么？
+目标、依赖、命令
+
+### 怎么描述三要素的关系？
+目标：依赖的文件或是其他目标
+<tab> 命令1
+<tab>命令2
+...
+
+### 实验
+1.创建文件
+![](images/2022-12-07-11-11-22.png)
+2.执行make命令
+![](images/2022-12-07-11-11-50.png)
+3.创建targetb文件后无法输出
+4.指定伪目标
+.PHONY:
+
+#### 直接执行某个目标
+- make targetname
+
+
+## 17.3 Makefile的变量、模式规则
+- 系统变量
+![](images/2022-12-07-15-04-39.png)
+
+- 自定义变量
+    * 延迟赋值   =
+    ![](images/2022-12-07-15-07-14.png)
+    ![](images/2022-12-07-15-07-29.png)
+    * 立即赋值  :=
+    ![](images/2022-12-07-15-08-25.png)
+    ![](images/2022-12-07-15-08-49.png)
+    * 空赋值    ?=
+    ![](images/2022-12-07-15-11-40.png)
+    ![](images/2022-12-07-15-11-56.png)
+    * 追加赋值  +=
+    ![](images/2022-12-07-15-12-57.png)
+    ![](images/2022-12-07-15-13-39.png)
+
+- 自动化变量
+    * 第一个依赖文件 $<
+    * 全部依赖文件   $^
+    * 目标      $@
+    ![](images/2022-12-07-15-40-04.png)
+
+- 模式匹配
+    * %匹配任意多个非空字符
+    * shell：*通配符
+    ![](images/2022-12-07-16-11-19.png)
+    ![](images/2022-12-07-16-10-21.png)
+
+- 默认规则
+   * .o文件默认使用.c文件来进行编译
+    ![](images/2022-12-07-16-17-38.png)
+
+## 17.4 Makefile的条件分支
+### 条件分支
+```makefile
+ifeq ()
+...
+else
+...
+endif
+```
+
+## 17.5 Makefile的常用函数
+找Makefile官方手册
+
+- pastsubst:
+    模式替换
+    ![](images/2022-12-07-17-23-51.png)
+- notdir:
+    删去目录名
+  ![](images/2022-12-07-17-26-58.png)
+- wildcard:
+    查找文件
+    ![](images/2022-12-07-20-11-35.png)
+    %是make的语法，而echo中打印的*.c是shell的命令
+- foreach:
+    遍历文件夹并查找文件
+    ![](images/2022-12-07-20-28-40.png)
+
+## 17.6 Makefile解决头文件依赖
+- 1.写一个头文件，并把头文件添加到编译器的头文件路径
+    * gcc -l+"头文件"
+  ![](images/2022-12-08-12-44-03.png)
+- 2.实时检查头文件的更新情况，一旦头文件发生变化，应该要重新编译所有相关文件。
+
+
+# 18. C语言面向对象基础
+## 面向过程
+- 把问题分解成一系列的步骤
+- 在函数里面一步步实现步骤
+- 根据需求调用函数
+
+## 面向对象
+- 把构成问题的事务分解成各个对象
+- 调用对象里面的方法属性解决问题
+面向对象的
+
+
+# 19.   一切皆对象
+## Linux内核
+屏蔽硬件区别，把所有的硬件设备抽象成文件，提供统一的接口给用户使用
+
+## 虚拟文件系统
+抽象层，对文件的访问实际上是对抽象层的访问。
+- 抽象对象：封装了底层读写细节，使用C语言的多态来实现具体文件系统的接口
+  
+
+## 普通文件系统：
+- ext4
+- fat32
+- ubifs
+
+## 特殊文件系统：
+- 进程文件系统：procfs,挂载在/proc，存放进程相关信息，任务管理器
+- 设备文件系统：devfs，挂载在/dev，存放硬件操作接口。
+
+myFunc.c: In function ‘qsort’:
+myFunc.c:137:14: warning: passing argument 1 of ‘swap’ from incompatible pointer type [-Wincompatible-pointer-types]
+  137 |         swap(v,left,(left+right)/2);
+      |              ^
+      |              |
+      |              void **
+myFunc.c:134:25: note: expected ‘char **’ but argument is of type ‘void **’
+  134 |         void swap(char *v[],int i,int j);
+      |                   ~~~~~~^~~
+myFunc.c:141:30: warning: passing argument 1 of ‘swap’ from incompatible pointer type [-Wincompatible-pointer-types]
+  141 |                         swap(v,++last,i);
+      |                              ^
+      |                              |
+      |                              void **
+myFunc.c:134:25: note: expected ‘char **’ but argument is of type ‘void **’
+  134 |         void swap(char *v[],int i,int j);
+      |                   ~~~~~~^~~
+myFunc.c:143:14: warning: passing argument 1 of ‘swap’ from incompatible pointer type [-Wincompatible-pointer-types]
+  143 |         swap(v,left,last);
+      |              ^
+      |              |
+      |              void **
+myFunc.c:134:25: note: expected ‘char **’ but argument is of type ‘void **’
+  134 |         void swap(char *v[],int i,int j);
+      |                   ~~~~~~^~~
+myFunc.c:144:9: error: too few arguments to function ‘qsort’
+  144 |         qsort(v,left,last-1);
+      |         ^~~~~
+myFunc.c:132:6: note: declared here
+  132 | void qsort(void *v[],int left,int right,int (*comp)(void *,void *)){
+      |      ^~~~~
+myFunc.c:145:9: error: too few arguments to function ‘qsort’
+  145 |         qsort(v,last+1,right);
+      |         ^~~~~
+myFunc.c:132:6: note: declared here
+  132 | void qsort(void *v[],int left,int right,int (*comp)(void *,void *)){
+      |      ^~~~~
+myFunc.c: At top level:
+myFunc.c:153:6: error: conflicting types for ‘swap’; have ‘void(void **, int,  int)’
+  153 | void swap(void *v[],int i,int j){
+      |      ^~~~
+myFunc.c:134:14: note: previous declaration of ‘swap’ with type ‘void(char **, int,  int)’
+  134 |         void swap(char *v[],int i,int j);

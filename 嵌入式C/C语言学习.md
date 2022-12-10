@@ -1,3 +1,5 @@
+https://lotabout.me/2015/write-a-C-interpreter-2/
+
 # EOF怎么输入
 在windows中是ctrl+z
 在Linux中是ctrl+d
@@ -107,6 +109,8 @@ str[3] = '1'; str[4] = '2'; str[5] = '3';
 ![](images/2022-11-30-21-21-43.png)
 
 ### static修饰内部变量，可使其一直占据存储空间，不随函数的被调用和退出而存在和消失
+![](images/2022-12-10-14-24-00.png)
+![](images/2022-12-10-14-24-17.png)
 
 
 ## 4.7  寄存器变量
