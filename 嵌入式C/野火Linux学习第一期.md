@@ -784,6 +784,9 @@ endif
 抽象层，对文件的访问实际上是对抽象层的访问。
 - 抽象对象：封装了底层读写细节，使用C语言的多态来实现具体文件系统的接口
   
+## 原理
+![](images/2022-12-11-14-45-04.png)
+
 
 ## 普通文件系统：
 - ext4
@@ -794,46 +797,440 @@ endif
 - 进程文件系统：procfs,挂载在/proc，存放进程相关信息，任务管理器
 - 设备文件系统：devfs，挂载在/dev，存放硬件操作接口。
 
-myFunc.c: In function ‘qsort’:
-myFunc.c:137:14: warning: passing argument 1 of ‘swap’ from incompatible pointer type [-Wincompatible-pointer-types]
-  137 |         swap(v,left,(left+right)/2);
-      |              ^
-      |              |
-      |              void **
-myFunc.c:134:25: note: expected ‘char **’ but argument is of type ‘void **’
-  134 |         void swap(char *v[],int i,int j);
-      |                   ~~~~~~^~~
-myFunc.c:141:30: warning: passing argument 1 of ‘swap’ from incompatible pointer type [-Wincompatible-pointer-types]
-  141 |                         swap(v,++last,i);
-      |                              ^
-      |                              |
-      |                              void **
-myFunc.c:134:25: note: expected ‘char **’ but argument is of type ‘void **’
-  134 |         void swap(char *v[],int i,int j);
-      |                   ~~~~~~^~~
-myFunc.c:143:14: warning: passing argument 1 of ‘swap’ from incompatible pointer type [-Wincompatible-pointer-types]
-  143 |         swap(v,left,last);
-      |              ^
-      |              |
-      |              void **
-myFunc.c:134:25: note: expected ‘char **’ but argument is of type ‘void **’
-  134 |         void swap(char *v[],int i,int j);
-      |                   ~~~~~~^~~
-myFunc.c:144:9: error: too few arguments to function ‘qsort’
-  144 |         qsort(v,left,last-1);
-      |         ^~~~~
-myFunc.c:132:6: note: declared here
-  132 | void qsort(void *v[],int left,int right,int (*comp)(void *,void *)){
-      |      ^~~~~
-myFunc.c:145:9: error: too few arguments to function ‘qsort’
-  145 |         qsort(v,last+1,right);
-      |         ^~~~~
-myFunc.c:132:6: note: declared here
-  132 | void qsort(void *v[],int left,int right,int (*comp)(void *,void *)){
-      |      ^~~~~
-myFunc.c: At top level:
-myFunc.c:153:6: error: conflicting types for ‘swap’; have ‘void(void **, int,  int)’
-  153 | void swap(void *v[],int i,int j){
-      |      ^~~~
-myFunc.c:134:14: note: previous declaration of ‘swap’ with type ‘void(char **, int,  int)’
-  134 |         void swap(char *v[],int i,int j);
+# 20.   文件描述符和打开模式
+## 20.1 系统IO编程(调用Linux系统开放的系统调用接口)
+- open
+- write
+- read
+- lseek
+- close
+
+伪代码：
+int fd;
+fd=open(filename,flags,mode);
+lseek(fd,offset,whence);
+write(fd,buf,write_len);
+read(fd,buf,read_len);
+close(fd);
+### 20.1.1 文件描述符
+特殊的索引
+实际上就是进程中file_struct结构体成员fd_array的数组下标
+
+### 20.1.2 文件打开模式
+主模式：
+- O_RDONLY:只读模式
+- O_WRONLY:只写模式
+- O_RDWR:读写模式
+
+副模式：
+- O_CREATE:当文件不存在，需要去创建文件
+- O_APPEND:追加模式
+- O_DIRECT:直接IO模式
+- O_SYNC:同步模式
+- O_NOBLOCK:非阻塞模式
+
+### 20.1.3 open_close函数
+#### open函数
+头文件：
+```
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+```
+函数原型：
+- 当文件存在时
+```
+int open(const char* pathname,int flags)
+```
+- 当文件不存在时
+```
+int open(const char* pathname,int flags,int perms)
+```
+返回值
+成功：文件描述符
+失败:-1
+
+#### close函数
+头文件：
+```
+#include<unistd.h>
+```
+函数原型：
+```
+int close(int fd)
+```
+返回值
+成功：0
+失败：-1
+
+#### open_close实验
+- main函数
+  ![](images/2022-12-11-16-56-31.png)
+- Makefile
+
+- 直接运行
+![](images/2022-12-11-16-59-22.png)
+
+- 创建文件后运行
+![](images/2022-12-11-17-03-10.png)
+    - 为什么文件描述符是3？
+        - 在Linux系统中，应用程序开始运行的时候就默认打开了0、1、2这三个文件描述符，分别是标准输入、标准输出、标准出错
+
+- 副模式
+  ![](images/2022-12-11-17-23-29.png)
+    第三个参解析：0表示八进制，666表示权限
+
+### 20.1.4 read_write函数
+#### read函数
+- 头文件
+```
+#include<unistd.h>
+```
+- 函数原型
+```
+ssize_t read(int fd,void *buff,size_t count)
+```
+
+- 返回值
+   * 成功：
+       * count:成功读取
+       * 0-count:
+           * 剩余文件长度
+           * 读取期间被异步信号打断
+    * 失败：
+      * -1:读取错误
+
+#### write函数
+- 头文件
+  同read函数
+- 函数原型
+```
+ssize_t write(int fd,void *buff,size_t count)
+```
+- 返回值
+  - 成功：
+    - count:成功写入全部字节
+    - 0-count:写入期间被异步信号打断
+  - 失败：
+    - -1：读取错误
+
+#### 复制普通文件实验
+- 1.打开要复制的文件
+- 2.创建新的文件
+- 3.把源文件内容读到缓冲区，把缓冲区内容写入新文件
+- 4.循环执行第三步，直到成功读取的字节数量为0，退出循环。
+- 5.关闭打开的文件
+
+### 20.1.5 lseek和sync函数
+#### lseek函数
+- 功能
+设置文件读写位置
+- 头文件
+```
+#include<unistd.h>
+```
+- 函数原型
+    ```
+    off_t lseek(int fd,off_t offset,int whence)
+    ```
+  - 若whence为SEEK_SET,基准点为文件开头
+  - 若whence为SEEK_CUR,基准点为当前位置
+  - 若whence为SEEK_END,基准点为文件末尾
+
+- 返回值
+  - 成功:文件偏移位置值
+  - 失败：-1
+
+- 实验
+![](images/2022-12-12-12-50-56.png)
+![](images/2022-12-12-12-51-59.png)
+中间是Linux内核的空格标识符
+
+#### sync函数
+![](images/2022-12-12-12-53-19.png)
+- 强制把修改过的页缓存区数据写入磁盘
+- 头文件
+    ``
+    include<unistd.h>
+    ``
+- 函数原型  
+    ```
+    void sync(void)
+    ```
+- 返回值：无
+
+## 20.2 标准IO编程(使用glibc库中的库函数)
+C标准库实现了一个IO缓存区
+### 常见标准IO函数
+- fopen
+- fclose
+- fread
+- fwrite
+- fseek
+- fflush
+
+
+### 文件IO五大模式
+- 阻塞模式
+- 非阻塞模式
+- IO多路复用
+- 异步IO
+- 信号驱动
+
+
+# 21. 进程
+## 21.1 进程的由来
+![](images/2022-12-12-17-39-43.png)
+### 程序
+静态文件
+### 进程
+运行着的实体
+### 查看进程之间的关系
+pstree
+### 操作系统如何区分进程
+PID：进程的身份证
+
+## 21.2 创建一个进程
+[Linux系统fork函数详解](https://blog.csdn.net/tianjindong0804/article/details/120930586)
+### fork函数
+#### 头文件:
+    ```
+        #include<unistd.h>
+    ```
+#### 函数原型：
+    ```
+        pid_t fork(void);
+    ```
+#### 返回值：
+成功：0或其它整数
+失败：-1
+### fork函数特性
+- 执行fork函数之后，fork函数会返回两次
+- 在旧进程中返回时，返回值为新进程的pid
+- 在新进程返回时，返回值为0
+
+## 21.3 exec函数族
+执行指定路径下的程序
+应用：子进程偷梁换柱
+
+常用后缀：
+```
+l:代表以列表形式传参
+v:代表以矢量数组形式传参
+p:代表使用环境变量Path来寻找指定执行文件
+e:代表用户提供自定义的环境变量
+```
+
+头文件：
+```
+#include<unistd.h>
+```
+
+函数原型：
+```
+int execl(const char *path,const char* arg,...)
+int execlp(const char *file,const char *arg,...)
+int execv(const char *path,char *const argv[])
+int execve(const char *path,char *const argv[],char *const envp[])
+```
+
+返回值：
+- 成功：不返回
+- 失败：-1
+
+## 21.4 进程的退出
+### 正常退出：
+- 从main函数return
+- 调用exit()函数终止
+- 调用_exit()函数终止
+
+### exit和_exit退出函数
+[Linux的exit和_exit](https://blog.csdn.net/gogo0707/article/details/124483014)
+[exit()函数及其基础实验](http://t.zoukankan.com/dyllove98-p-3129981.html)
+头文件：
+```
+#include<unistd.h>
+#include<stdlib.h>
+```
+原型：
+```
+void _exit(int status);     //直接退出
+void exit(int status);      //清空IO缓冲区再退出
+```
+一般用status=0表示正常退出
+
+返回值：
+不返回
+
+
+## 21.5 等待子进程的终结
+### wait函数
+头文件
+```
+#include<sys/wait.h>
+```
+函数原型：
+```
+pid_t wait(int *status)    //记录子进程退出值  
+```
+
+返回值：
+- 成功：退出的子进程的pid
+- 失败：-1
+
+### 处理子进程退出状态值的宏
+- WIFEXITED(status):如果子进程正常退出，则该宏为真
+- WEXITSTATUS(status):如果子进程正常退出，则该宏获取子进程的退出值
+
+### 实验
+![](images/2022-12-13-16-16-43.png)
+exit(int status)中的status 通过wait传递
+
+## 21.6 进程的生老病死
+![](images/2022-12-13-17-32-36.png)
+
+## 21.7 进程组、会话、终端
+### 进程组
+作用：对相同类型的进程进行管理
+
+### 进程组的诞生
+- 在shell里面直接执行一个应用程序，对于大部分进程来说，自己就是进程组的首进程，进程组只有一个进程
+- 如果进程调用了fork函数，那么父子进程同属一个进程组，父进程为首进程
+- 在shell中通过管道执行连接起来的应用程序，两个程序同属一个进程组，第一个程序为进程组的首进程
+
+进程组id: pgid,由首进程pid决定
+
+ps axjf
+
+### 会话
+作用：管理进程组
+- 调用setsid函数，新建一个会话，应用程序作为会话的第一个进程，称为会话首进程
+- 用户在终端正确登录之后，启动shell时Linux系统会创建一个新的会话，shell进程作为会话首进程
+
+会话id：会话首进程id，SID
+
+### 前台进程组
+shell进程启动时，默认是前台进程组的首进程。
+前台进程组的首进程会占用会话所关联的终端来运行，shell启动其他应用程序时，其他程序成为首进程
+
+### 后台进程组
+后台进程组中的程序是不会占用终端
+
+在shell进程里启动程序时，加上&符号可以指定程序运行在后台进程里面
+
+实验：sleep 3
+
+ctrl+z
+
+jobs：查看有哪些后台进程组
+fg+job id可以把后台进程组切换为前台进程组
+
+### 终端
+- 物理终端
+  - 串口终端
+  - lcd终端
+- 伪终端
+  - ssh远程连接产生的终端
+  - 桌面系统启动的终端
+- 虚拟终端
+    Linux内核自带的，crtl+alt+f0~f6
+
+## 21.8 守护进程
+会话用来管理前后台进程组
+会话一般关联着一个终端
+
+
+## 21.9 ps命令详解
+![](images/2022-12-20-14-43-44.png)
+![](images/2022-12-20-14-46-04.png)
+
+## 21.10 僵尸进程和托孤进程
+进程的正常退出步骤：
+- 子进程调用exit()函数退出
+- 父进程调用wait()函数为子进程处理其他事情
+
+### 僵尸进程
+子进程退出后，父进程没有调用wait函数处理身后事，子进程变成僵尸进程
+
+### 托孤进程
+父进程比子进程先退出，子进程变为孤儿进程，Linux系统会把子进程托孤给1号进程（init进程）
+
+## 21.11 什么是进程间通信(ipc)
+### 进程间通信
+- 数据传输
+- 资源共享
+- 事件通知
+- 进程控制
+
+### Linux系统下的ipc
+- 早期unix系统ipc
+  - 管道
+  - 信号
+  - fifo
+- system-v ipc（贝尔实验室）
+  - system-v 消息队列
+  - system-v 信号量
+  - system-v 共享内存
+- socket ipc（BSD）
+- posix ipc(IEEE)
+  - posix 消息队列
+  - posix 信号量
+  - posix 共享内存
+
+## 21.12 无名管道
+### pipe函数
+头文件：
+```
+#include<unistd.h>
+```
+函数原型：
+```
+int pipe(int pipefd[2]);
+```
+
+返回值：
+成功：0
+失败：-1
+
+### 特点
+- 特殊文件（没有名字），无法使用open，但是可以使用close
+- 只能通过子进程继承文件描述符的形式来使用
+- write和read操作可能会阻塞进程
+- 所有文件描述符被关闭之后，无名管道被销毁
+
+### 使用步骤
+- 父进程pipe无名管道
+- fork子进程
+- close无用端口
+- write/read读写端口
+- close读写端口
+
+## 21.13 有名管道
+### mkfifo函数
+头文件
+```
+#include<sys/types.h>
+#include<sys/state.h>
+```
+
+函数原型：
+```
+int mkfifo(const char *filename,mode_t mode)
+```
+
+返回值：
+- 成功：0
+- 失败：-1
+
+### 特点：
+- 有文件名，可以用open函数打开
+- 任意进程间数据传输
+- write和read操作可能会阻塞进程
+- write具有"原子性"
+
+### 使用步骤：
+- 第一个进程mkfifo有名管道
+- open有名管道，write/read数据
+- close有名管道
+- 第二个进程open有名管道,read/write数据
+- close有名管道

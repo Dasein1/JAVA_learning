@@ -150,4 +150,12 @@
 
 
 
-# C语言实现多态
+# C语言面向对象
+## 结构体中的函数
+https://zhuanlan.zhihu.com/p/363295380
+
+## 封装继承多态
+[C语言：继承、封装、多态 - cccccCccccc的文章 - 知乎](https://zhuanlan.zhihu.com/p/53943888)
+
+## 示例
+![](images/2022-12-11-14-37-07.png)
