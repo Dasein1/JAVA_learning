@@ -1234,3 +1234,4 @@ int mkfifo(const char *filename,mode_t mode)
 - close有名管道
 - 第二个进程open有名管道,read/write数据
 - close有名管道
+
