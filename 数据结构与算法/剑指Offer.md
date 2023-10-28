@@ -1602,7 +1602,6 @@ class Solution {
         return sign*res;
     }
 }
-```
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         TreeNode node=root;
         while(node!=null){
@@ -1619,7 +1618,7 @@ class Solution {
         return node;
     }
 }
-```
+
 
 # 68-II. 二叉树的最近公共祖先
 ![](images/2022-03-23-10-21-00.png)
@@ -1648,3 +1647,5 @@ class Solution {
 }
 ```
  
+
+ # 14-I. 剪绳子
